@@ -5,9 +5,6 @@ class Board:
     Drawing the board given N
     """
     def __init__(self, N):
-        if (N%2 != 0):
-            print (f"Error 201: N: {N} must be Even")
-            return
         self.N = N
         self.board_color_1 = color_rgb(250, 220, 107)
         self.board_color_2 = color_rgb(219, 74, 14)
@@ -26,34 +23,37 @@ class Board:
         rect_draw.setFill(color)
         rect_draw.draw(self.window)
 
-    def circle(self, center_x, center_y, circle_color):
+    def circle(self, center_x, center_y, circle_color, radius=13):
         center = Point(center_x, center_y)
-        circle_draw = Circle(center, 13)
+        circle_draw = Circle(center, radius)
         circle_draw.setFill(circle_color)
+        circle_draw.setOutline("red")
         circle_draw.draw(self.window)
 
-    def draw_board(self):
+    def draw_board(self, board):
         self.set_window()
         # Draw squares
         for i in range (self.N):
             if i%2 == 0:
                 board_color = self.board_color_2
-                toggle = 0
             else:
                 board_color = self.board_color_1
-                toggle = 1
                 
             for j in range (self.N):
                 self.rect(j*30, i*30, board_color)
-                if (i < self.N/2 and i < (self.N/2)-1 and j%2 == toggle):
+
+                if (board[self.N-i-1][j] == 1):
+                    #player 1: white
                     self.circle( (j*30)+15, (i*30)+15, self.circle_color_1) 
+                    self.circle( (j*30)+15, (i*30)+15, self.circle_color_1, radius = 10) 
 
-                if (i > self.N/2 and i >=(self.N/2)+1 and j%2 == toggle):
+                if (board[self.N-i-1][j] == -1):
                     self.circle( (j*30)+15, (i*30)+15, self.circle_color_2) 
-
+                    self.circle( (j*30)+15, (i*30)+15, self.circle_color_2, radius=10) 
                 if board_color == self.board_color_1:
                     board_color = self.board_color_2
                 else:
                     board_color = self.board_color_1
 
         self.window.getMouse()
+    
