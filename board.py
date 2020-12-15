@@ -8,8 +8,8 @@ class Board:
         self.N = N
         self.board_color_1 = color_rgb(250, 220, 107)
         self.board_color_2 = color_rgb(219, 74, 14)
-        self.circle_color_1 = color_rgb(222,241, 229)
-        self.circle_color_2 = color_rgb(41, 26, 24)
+        self.circle_color_2 = color_rgb(222,241, 229)
+        self.circle_color_1 = color_rgb(41, 26, 24)
 
     def set_window(self):
         win = GraphWin('board',720,720)
