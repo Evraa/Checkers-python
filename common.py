@@ -54,7 +54,7 @@ def where_can_i_move_next(board, player=1):
 
     for i in range(N):
         for j in range (N):
-            if  board[i][j] != 0 :
+            if  board[i][j] == 0 :
                 continue
             
             #pos: player 1 whther it was soldier or king
@@ -65,14 +65,14 @@ def where_can_i_move_next(board, player=1):
                     #not out of bound
                     if (board[i+1][j-1] == 0):
                         #can move left
-                        possible_moves.append([(board[i][j]),(board[i+1][j-1]),0])
+                        possible_moves.append( [(i,j), (i+1, j-1), 0]  )
                     elif (board[i+1][j-1] <= -1):
                         moves = sequence_of_moves (board, (board[i],board[j]),(board[i+1],board[j-1]),1)
                  
                 if (i+1 < N) and (j+1 < N):
                     if (board[i+1][j+1] == 0):
                         #not out of bound, and free move "right"
-                        possible_moves.append([(board[i][j]),(board[i+1][j+1]),0])
+                        possible_moves.append( [(i,j), (i+1, j+1), 0]  )
                     elif (board[i+1][j+1] <= -1):
                         moves = sequence_of_moves (board, (board[i],board[j]),(board[i+1],board[j+1]),1)
                 
@@ -83,17 +83,17 @@ def where_can_i_move_next(board, player=1):
                     #not out of bound
                     if (board[i-1][j-1] == 0):
                         #can move left
-                        possible_moves.append([(board[i][j]),(board[i-1][j-1]),0])
+                        possible_moves.append( [(i,j), (i-1, j-1), 0]  )
                     elif (board[i-1][j-1] >= 1):
                         moves = sequence_of_moves (board, (board[i],board[j]),(board[i-1],board[j-1]),-1)
 
-                if (i-1 >= N) and (j+1 < N):
+                if (i-1 >= 0) and (j+1 < N):
                     if (board[i-1][j+1] == 0):
                         #not out of bound, and free move "right"
-                        possible_moves.append([(board[i][j]),(board[i-1][j+1]),0])
+                        possible_moves.append( [(i,j), (i-1, j+1), 0]  )
                     elif (board[i-1][j+1] >= 1):
                         moves = sequence_of_moves (board, (board[i],board[j]),(board[i-1],board[j+1]),-1)
             #else is zero .. skip
     print (possible_moves)
 board = init_board(N)
-where_can_i_move_next(board)
+where_can_i_move_next(board, -1)
