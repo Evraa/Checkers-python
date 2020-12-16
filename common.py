@@ -1,4 +1,4 @@
-
+from constants import N
 
 def init_board(N):
     board = []
@@ -31,4 +31,6 @@ def init_board(N):
             board.append(zeros)
     
     return board
+
+    
 init_board(8)

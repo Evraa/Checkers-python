@@ -1,5 +1,5 @@
 from graphics import *
-
+from constants import WIDTH, HEIGHT, SQR_SIZE
 class Board:
     """
     Drawing the board given N
@@ -12,18 +12,18 @@ class Board:
         self.circle_color_1 = color_rgb(41, 26, 24)
 
     def set_window(self):
-        win = GraphWin('board',720,720)
-        win.setCoords(0, 0, self.N*30, self.N*30)
+        win = GraphWin('board',WIDTH,HEIGHT)
+        win.setCoords(0, 0, self.N*SQR_SIZE, self.N*SQR_SIZE)
         self.window = win
 
     def rect(self, right, top, color):
         point_1 = Point(right, top)
-        point_2 = Point(right+30, top+30)
+        point_2 = Point(right+SQR_SIZE, top+SQR_SIZE)
         rect_draw = Rectangle(point_1, point_2)
         rect_draw.setFill(color)
         rect_draw.draw(self.window)
 
-    def circle(self, center_x, center_y, circle_color, radius=13):
+    def circle(self, center_x, center_y, circle_color, radius=(SQR_SIZE//2)-2):
         center = Point(center_x, center_y)
         circle_draw = Circle(center, radius)
         circle_draw.setFill(circle_color)
@@ -40,16 +40,16 @@ class Board:
                 board_color = self.board_color_1
                 
             for j in range (self.N):
-                self.rect(j*30, i*30, board_color)
+                self.rect(j*SQR_SIZE, i*SQR_SIZE, board_color)
 
                 if (board[self.N-i-1][j] == 1):
                     #player 1: white
-                    self.circle( (j*30)+15, (i*30)+15, self.circle_color_1) 
-                    self.circle( (j*30)+15, (i*30)+15, self.circle_color_1, radius = 10) 
+                    self.circle( (j*SQR_SIZE)+(SQR_SIZE//2), (i*SQR_SIZE)+(SQR_SIZE//2), self.circle_color_1) 
+                    self.circle( (j*SQR_SIZE)+(SQR_SIZE//2), (i*SQR_SIZE)+(SQR_SIZE//2), self.circle_color_1, radius = (SQR_SIZE//2)-5) 
 
                 if (board[self.N-i-1][j] == -1):
-                    self.circle( (j*30)+15, (i*30)+15, self.circle_color_2) 
-                    self.circle( (j*30)+15, (i*30)+15, self.circle_color_2, radius=10) 
+                    self.circle( (j*SQR_SIZE)+(SQR_SIZE//2), (i*SQR_SIZE)+(SQR_SIZE//2), self.circle_color_2) 
+                    self.circle( (j*SQR_SIZE)+(SQR_SIZE//2), (i*SQR_SIZE)+(SQR_SIZE//2), self.circle_color_2, radius=(SQR_SIZE//2)-5) 
                 if board_color == self.board_color_1:
                     board_color = self.board_color_2
                 else:
