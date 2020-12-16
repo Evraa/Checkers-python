@@ -54,13 +54,12 @@ def where_can_i_move_next(board, player=1):
 
     for i in range(N):
         for j in range (N):
-            if (i%2) != ((j+1)%2) and N%2 == 0:
+            if  board[i][j] != 0 :
                 continue
-            if (i%2) != (j%2) and N%2 == 1:
-                continue
+            
             #pos: player 1 whther it was soldier or king
             #neg: player 2 ~
-            if board[i][j] == player or (player>0 and board[i][j]==player+1):
+            if board[i][j] >= 1 and player == 1:
                 #player 1
                 if (i+1 < N) and (j-1 >= 0):
                     #not out of bound
@@ -78,7 +77,7 @@ def where_can_i_move_next(board, player=1):
                         moves = sequence_of_moves (board, (board[i],board[j]),(board[i+1],board[j+1]),1)
                 
                     
-            elif board[i][j] == player or (player<0 and board[i][j]==player-1):
+            elif board[i][j] <= -1 and player == -1:
                 #player 2
                 if (i-1 >= 0) and (j-1 >= 0):
                     #not out of bound
@@ -95,6 +94,6 @@ def where_can_i_move_next(board, player=1):
                     elif (board[i-1][j+1] >= 1):
                         moves = sequence_of_moves (board, (board[i],board[j]),(board[i-1],board[j+1]),-1)
             #else is zero .. skip
-
+    print (possible_moves)
 board = init_board(N)
 where_can_i_move_next(board)
