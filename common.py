@@ -113,6 +113,7 @@ def where_can_i_move_next(board, player=1):
                         possible_moves.append( [(i,j), (i+1, j-1), 0]  )
                     elif (board[i+1][j-1] <= -1) and (i+2<N and j-2 >=0):
                         new_board = deepcopy(board)
+                        new_board[i+1][j-1] = 0
                         moves = "L0" + sequence_of_moves (new_board, (i,j),(i+2,j-2),1)
                         interpret_moves(moves.split("0"))
 
@@ -122,8 +123,8 @@ def where_can_i_move_next(board, player=1):
                         possible_moves.append( [(i,j), (i+1, j+1), 0]  )
                     elif (board[i+1][j+1] <= -1):
                         new_board = deepcopy(board)
+                        new_board[i+1][j+1] = 0
                         moves = 'R0' + sequence_of_moves (new_board, (i,j),(i+2,j+2),1)
-                        print(moves.split('0'))
                         interpret_moves(moves.split("0"))
 
             elif board[i][j] <= -1 and player == -1:
