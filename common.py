@@ -1,6 +1,6 @@
 from constants import N
 from math import ceil, floor
-
+from copy import deepcopy
 
 def init_board(N):
     board = []
@@ -45,9 +45,11 @@ def sequence_of_moves (board, start, end, player):
             if board[end[0]][end[1]] == 0: 
                 if end[0]+2 < N and end[1]-2 >= 0 and board[end[0]+1][end[1]-1] <= -1:
                     #it can move left
+                    board[end[0]+1][end[1]-1] = 0
                     seq+= 'L' + sequence_of_moves(board, end, (end[0]+2 , end[1]-2), 1)
                 if end[0]+2 < N and end[1]+2 < N and board[end[0]+1][end[1]+1] <= -1:
                     #it can move right
+                    board[end[0]+1][end[1]+1] = 0
                     seq+= 'R' + sequence_of_moves(board, end, (end[0]+2 , end[1]+2), 1)
                 #not out of bound, but no more moves allowed!
                 return seq+ "0"
@@ -63,13 +65,25 @@ def interpret_moves(moves):
     sequences = []
     sequences.append(moves[0]+moves[1])
     i = 1
+    start = moves[0]
     for move in (moves[2:]):
         if len(move) > 0:
             sequences.append(sequences[i-1])
             L = len(move)
-            sequences[i] = sequences[i][0:-L] + move
+            if len(sequences[i]) == 1:
+                sequences[i] += move
+            else:
+                sequences[i] = sequences[i][0:-L] + move
             i += 1
-    print (sequences)
+        else:
+            sequences.append(start)
+            i+= 1
+    real_seq = []
+    for seq in sequences:
+        if len(seq) > 1:
+            real_seq.append(seq)
+    print (real_seq)
+    return real_seq
 
 
 
@@ -98,8 +112,8 @@ def where_can_i_move_next(board, player=1):
                         #can move left
                         possible_moves.append( [(i,j), (i+1, j-1), 0]  )
                     elif (board[i+1][j-1] <= -1) and (i+2<N and j-2 >=0):
-                        moves = "L0" + sequence_of_moves (board, (i,j),(i+2,j-2),1)
-                        print (moves.split("0"))
+                        new_board = deepcopy(board)
+                        moves = "L0" + sequence_of_moves (new_board, (i,j),(i+2,j-2),1)
                         interpret_moves(moves.split("0"))
 
                 if (i+1 < N) and (j+1 < N):
@@ -107,8 +121,9 @@ def where_can_i_move_next(board, player=1):
                         #not out of bound, and free move "right"
                         possible_moves.append( [(i,j), (i+1, j+1), 0]  )
                     elif (board[i+1][j+1] <= -1):
-                        moves = 'R0' + sequence_of_moves (board, (i,j),(i+2,j+2),1)
-                        print (moves.split("0"))
+                        new_board = deepcopy(board)
+                        moves = 'R0' + sequence_of_moves (new_board, (i,j),(i+2,j+2),1)
+                        print(moves.split('0'))
                         interpret_moves(moves.split("0"))
 
             elif board[i][j] <= -1 and player == -1:
