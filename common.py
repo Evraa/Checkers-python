@@ -38,8 +38,26 @@ def init_board(N):
     return board
 
 def sequence_of_moves (board, start, end, player):
-    count = 0
+    if player == 1:
+        if end[0] < N and (end[1] >= 0 or end[1] < N):
+            #not out of bound
+            if board[end[0]][end[1]] == 0: 
+                if end[0]+2 < N and end[1]-2 >= 0 and board[end[0]+1][end[1]-1] <= -1:
+                    #it can move left
+                    return 'L ' + sequence_of_moves(board, end, (end[0]+2 , end[1]-2), 1)
+                if end[0]+2 < N and end[1]+2 < N and board[end[0]+1][end[1]+1] <= -1:
+                    #it can move right
+                    return 'R ' + sequence_of_moves(board, end, (end[0]+2 , end[1]+2), 1)
+                #not out of bound, but no more moves allowed!
+                return "0 "
+        else:
+            #out of bound
+            return "0 "
+    
+    elif player == -1:
+        pass
 
+    
 
 
 def where_can_i_move_next(board, player=1):
@@ -67,15 +85,15 @@ def where_can_i_move_next(board, player=1):
                         #can move left
                         possible_moves.append( [(i,j), (i+1, j-1), 0]  )
                     elif (board[i+1][j-1] <= -1):
-                        moves = sequence_of_moves (board, (board[i],board[j]),(board[i+1],board[j-1]),1)
+                        moves = sequence_of_moves (board, (i,j),(i+2,j-2),1)
                  
                 if (i+1 < N) and (j+1 < N):
                     if (board[i+1][j+1] == 0):
                         #not out of bound, and free move "right"
                         possible_moves.append( [(i,j), (i+1, j+1), 0]  )
                     elif (board[i+1][j+1] <= -1):
-                        moves = sequence_of_moves (board, (board[i],board[j]),(board[i+1],board[j+1]),1)
-                
+                        moves = 'R ' + sequence_of_moves (board, (i,j),(i+2,j+2),1)
+                        print (moves)
                     
             elif board[i][j] <= -1 and player == -1:
                 #player 2
@@ -85,15 +103,27 @@ def where_can_i_move_next(board, player=1):
                         #can move left
                         possible_moves.append( [(i,j), (i-1, j-1), 0]  )
                     elif (board[i-1][j-1] >= 1):
-                        moves = sequence_of_moves (board, (board[i],board[j]),(board[i-1],board[j-1]),-1)
+                        moves = sequence_of_moves (board, (i,j),(i-2,j-2),-1)
 
                 if (i-1 >= 0) and (j+1 < N):
                     if (board[i-1][j+1] == 0):
                         #not out of bound, and free move "right"
                         possible_moves.append( [(i,j), (i-1, j+1), 0]  )
                     elif (board[i-1][j+1] >= 1):
-                        moves = sequence_of_moves (board, (board[i],board[j]),(board[i-1],board[j+1]),-1)
-            #else is zero .. skip
-    print (possible_moves)
-board = init_board(N)
-where_can_i_move_next(board, -1)
+                        moves = sequence_of_moves (board, (i,j),(i-2,j+2),-1)
+
+            #else is zero .. skip .. no elses btw.
+    return (possible_moves)
+
+# board = init_board(N)
+zeros = [0,0,0,0,0,0,0,0]
+test_board = [  zeros,
+                [0,0,1,0,0,0,0,0],
+                [0,0,0,-1,0,0,0,0],
+                zeros,
+                [0,0,0,-1,0,0,0,0],
+                [0,0,0,0,0,0,0,0],
+                [0,0,0,-1,0,0,0,0],
+                zeros
+            ]
+print(where_can_i_move_next(test_board))
