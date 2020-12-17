@@ -63,14 +63,19 @@ def interpret_moves(moves):
     print (real_seq)
     return real_seq
 
+def append_this(results, seq):
+    for result in results:
+        if result.find(seq) != -1:
+            return
+    results.append(seq)
 
 from board import *
-def sequence_of_moves (board, start, end, player,ultimate_start):
+def sequence_of_moves (board, start, end, player,ultimate_start,results = [],seq=""):
     br = Board(N)
 
     br.draw_board(board)
 
-    seq = ""
+    # seq = ""
     if player == 1:
         if end[0] < N and (end[1] >= 0 and end[1] < N):
             #not out of bound
@@ -104,33 +109,45 @@ def sequence_of_moves (board, start, end, player,ultimate_start):
                 new_board[end[0]+1][end[1]-1] = 0
                 new_board[end[0]][end[1]] = 0
                 new_board[end[0]+2][end[1]-2] = 2
-                seq+= 'L' + sequence_of_moves(new_board, end, (end[0]+2 , end[1]-2), 2,ultimate_start)
+                seqq = seq + 'L' 
+                # seq+=  'L' + sequence_of_moves(new_board, end, (end[0]+2 , end[1]-2), 2,ultimate_start,seqq)
+                seqq += sequence_of_moves(new_board, end, (end[0]+2 , end[1]-2), 2,ultimate_start,results,seqq)
+                
             if end[0]+2 < N and end[1]+2 < N and board[end[0]+1][end[1]+1] <= -1:
                 #it can move right down
                 new_board = deepcopy(board)
                 new_board[end[0]+1][end[1]+1] = 0
                 new_board[end[0]][end[1]] = 0
                 new_board[end[0]+2][end[1]+2] = 2
-                seq+= 'R' + sequence_of_moves(new_board, end, (end[0]+2 , end[1]+2), 2,ultimate_start)
+                # seq+= 'R' + sequence_of_moves(new_board, end, (end[0]+2 , end[1]+2), 2,ultimate_start)
+                seqq = seq + 'R' 
+                seqq += sequence_of_moves(new_board, end, (end[0]+2 , end[1]+2), 2,ultimate_start,results,seqq)
             if end[0]-2 >=0 and end[1]-2 >= 0 and board[end[0]-1][end[1]-1] <= -1:
                 # it can move up left
                 new_board = deepcopy(board)
                 new_board[end[0]-1][end[1]-1] = 0
                 new_board[end[0]][end[1]] = 0
                 new_board[end[0]-2][end[1]-2] = 2
-                seq+= 'l' + sequence_of_moves(new_board, end, (end[0]-2 , end[1]-2), 2,ultimate_start)
+                # seq+= 'l' + sequence_of_moves(new_board, end, (end[0]-2 , end[1]-2), 2,ultimate_start)
+                seqq = seq + 'l' 
+                seqq += sequence_of_moves(new_board, end, (end[0]-2 , end[1]-2), 2,ultimate_start,results,seqq)
             if end[0]-2 >=0 and end[1]+2 < N and board[end[0]-1][end[1]+1] <= -1:
                 # it can move up right
                 new_board = deepcopy(board)
                 new_board[end[0]-1][end[1]+1] = 0
                 new_board[end[0]][end[1]] = 0
                 new_board[end[0]-2][end[1]+2] = 2
-                seq+= 'r' + sequence_of_moves(new_board, end, (end[0]-2 , end[1]+2), 2,ultimate_start)
+                # seq+= 'r' + sequence_of_moves(new_board, end, (end[0]-2 , end[1]+2), 2,ultimate_start)
+                seqq = seq + 'r' 
+                seqq += sequence_of_moves(new_board, end, (end[0]-2 , end[1]+2), 2,ultimate_start,results,seqq)
 
             #not out of bound, but no more moves allowed!
+            # results.append(seq)
+            append_this(results, seq)
             return seq+ "0"
         else:
             #out of bound
+            # results.append(seq+'0')
             return seq+ "0"
 
     elif player == -1:
@@ -171,9 +188,9 @@ def where_can_i_move_next(board, player=1):
                         new_board[i+1][j-1] = 0
                         new_board[i][j] = 0
                         new_board[i+2][j-2] = board[i][j]
-                        moves = "L0" + sequence_of_moves (new_board, (i,j),(i+2,j-2),board[i][j],(i,j))
-                        interpret_moves(moves.split("0"))
-                        
+                        results = []
+                        moves = sequence_of_moves (new_board, (i,j),(i+2,j-2),board[i][j],(i,j),results,'L')
+                        print(results)
 
                 if (i+1 < N) and (j+1 < N):
                     if (board[i+1][j+1] == 0):
@@ -184,8 +201,9 @@ def where_can_i_move_next(board, player=1):
                         new_board[i+1][j+1] = 0
                         new_board[i][j] = 0
                         new_board[i+2][j+2] = board[i][j]
-                        moves = 'R0' + sequence_of_moves (new_board, (i,j),(i+2,j+2),board[i][j],(i,j))
-                        interpret_moves(moves.split("0"))
+                        results = []
+                        moves = sequence_of_moves (new_board, (i,j),(i+2,j+2),board[i][j],(i,j),results,'R')
+                        print (results)
 
             if board[i][j] == 2 and player == 1:
                 ######### player 1 king #######
@@ -201,8 +219,9 @@ def where_can_i_move_next(board, player=1):
                         new_board[i-1][j-1] = 0
                         new_board[i][j] = 0
                         new_board[i-2][j-2] = board[i][j]
-                        moves = "l0" + sequence_of_moves (new_board, (i,j),(i-2,j-2),board[i][j],(i,j))
-                        interpret_moves(moves.split("0"))
+                        results = []
+                        moves = sequence_of_moves (new_board, (i,j),(i-2,j-2),board[i][j],(i,j),results, 'l')
+                        print (results)
 
                 if (i-1 >= 0) and (j+1 < N):
                     if (board[i-1][j+1] == 0):
@@ -213,9 +232,9 @@ def where_can_i_move_next(board, player=1):
                         new_board[i-1][j+1] = 0
                         new_board[i][j] = 0
                         new_board[i-2][j+2] = board[i][j]
-                        moves = 'r0' + sequence_of_moves (new_board, (i,j),(i-2,j+2),board[i][j],(i,j))
-                        interpret_moves(moves.split("0"))
-
+                        results = []
+                        moves = sequence_of_moves (new_board, (i,j),(i-2,j+2),board[i][j],(i,j),results,'r')
+                        print (results)
             elif board[i][j] <= -1 and player == -1:
                 #player 2
                 if (i-1 >= 0) and (j-1 >= 0):
