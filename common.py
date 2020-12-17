@@ -47,10 +47,7 @@ def append_this(results, seq):
 
 from board import *
 def sequence_of_moves (board, start, end, player,ultimate_start,results = [],seq=""):
-    br = Board(N)
-
-    br.draw_board(board)
-
+    
     if player == 1:
         if end[0] < N and (end[1] >= 0 and end[1] < N):
             #not out of bound
@@ -135,18 +132,63 @@ def sequence_of_moves (board, start, end, player,ultimate_start,results = [],seq
         pass
 
 
+def add_results(results, possible_moves, start, orig_board):
+    for result in results:
+        possible_move = [start]
+        # chars = result.split(' ')
+        # chars = result.split('')
+        board = deepcopy(orig_board)
+        cost = 0
+        i,j = start[0],start[1]
+        for char in result:
+            if char == '' or char == ' ':
+                continue
+            if char == 'R':
+                board[i+1][j+1] = 0 #kill it
+                board[i+2][j+2] = board[i][j]   #move me
+                board[i][j] =0      #from there
+                cost += 1
+                i += 2
+                j += 2
+            elif char == 'L':
+                board[i+1][j-1] = 0 #kill it
+                board[i+2][j-2] = board[i][j]   #move me
+                board[i][j] =0      #from there
+                cost += 1
+                i += 2
+                j -= 2
+            elif char == 'r':
+                board[i-1][j+1] = 0 #kill it
+                board[i-2][j+2] = board[i][j]   #move me
+                board[i][j] =0      #from there
+                cost += 1
+                i -= 2
+                j += 2
+            elif char == 'l':
+                board[i-1][j-1] = 0 #kill it
+                board[i-2][j-2] = board[i][j]   #move me
+                board[i][j] =0      #from there
+                cost += 1
+                i -= 2
+                j -= 2
+
+        possible_move.append((i,j))    
+        possible_move.append(cost)
+        possible_move.append(board)
+        possible_moves.append(possible_move)
 
 
 def where_can_i_move_next(board, player=1):
     '''
         + Given player (1/-1) and the board settings, decide the pieces that can move next.
-        + Returns: list of tuples of pieces indexes that can move next.
+        + Returns: list of possible moves
+            + Possible_move: [typle of start, tuple of end, how_many_killed, new_board]
     '''
     #Total number of pieces a player might has
     num_pieces = (ceil(N/2) - 1) * (ceil(N/2))
     #(start, end, wining_cost), wining_cost: how many pieces I ate!
     possible_moves = []
-    ev = []
+    
     for i in range(N):
         for j in range (N):
             if  board[i][j] == 0 :
@@ -160,21 +202,31 @@ def where_can_i_move_next(board, player=1):
                     #not out of bound
                     if (board[i+1][j-1] == 0):
                         #can move left down
-                        possible_moves.append( [(i,j), (i+1, j-1), 0]  )
+                        new_board = deepcopy(board)
+                        new_board[i+1][j-1] = 0 #killed it
+                        new_board[i][j] = 0     #move me
+                        new_board[i+2][j-2] = board[i][j] #there
+                        possible_moves.append( [(i,j), (i+1, j-1), 0, new_board]  )
+
                     #sequence of moves may occur
                     elif (board[i+1][j-1] <= -1) and (i+2<N and j-2 >=0) and board[i+2][j-2] == 0:
                         new_board = deepcopy(board)
                         new_board[i+1][j-1] = 0
                         new_board[i][j] = 0
-                        new_board[i+2][j-2] = board[i][j]
+                        new_board[i+2][j-2] = board[i][j] #2
                         results = []
                         sequence_of_moves (new_board, (i,j),(i+2,j-2),board[i][j],(i,j),results,'L')
-                        ev.append(results)
+                        new_board = deepcopy(board)
+                        add_results(results, possible_moves,(i,j),new_board)
 
                 if (i+1 < N) and (j+1 < N):
                     if (board[i+1][j+1] == 0):
                         #not out of bound, and free move "right" down
-                        possible_moves.append( [(i,j), (i+1, j+1), 0]  )
+                        new_board = deepcopy(board)
+                        new_board[i+1][j+1] = 0 #killed it
+                        new_board[i][j] = 0     #move me
+                        new_board[i+2][j+2] = board[i][j] #there
+                        possible_moves.append( [(i,j), (i+1, j+1), 0, new_board]  )
 
                     elif (board[i+1][j+1] <= -1) and (i+2<N and j+2 <N) and board[i+2][j+2] == 0:
                         new_board = deepcopy(board)
@@ -183,7 +235,8 @@ def where_can_i_move_next(board, player=1):
                         new_board[i+2][j+2] = board[i][j]
                         results = []
                         sequence_of_moves (new_board, (i,j),(i+2,j+2),board[i][j],(i,j),results,'R')
-                        ev.append(results)
+                        new_board = deepcopy(board)
+                        add_results(results, possible_moves,(i,j),new_board)
 
             if board[i][j] == 2 and player == 1:
                 ######### player 1 king #######
@@ -192,7 +245,11 @@ def where_can_i_move_next(board, player=1):
                     #not out of bound
                     if (board[i-1][j-1] == 0):
                         #can move left
-                        possible_moves.append( [(i,j), (i-1, j-1), 0]  )
+                        new_board = deepcopy(board)
+                        new_board[i-1][j-1] = 0 #killed it
+                        new_board[i][j] = 0     #move me
+                        new_board[i-2][j-2] = board[i][j] #there
+                        possible_moves.append( [(i,j), (i-1, j-1), 0, new_board]  )
 
                     #sequence of moves may occur
                     elif (board[i-1][j-1] <= -1) and (i-2>=0 and j-2 >=0) and board[i-2][j-2] == 0:
@@ -202,12 +259,17 @@ def where_can_i_move_next(board, player=1):
                         new_board[i-2][j-2] = board[i][j]
                         results = []
                         sequence_of_moves (new_board, (i,j),(i-2,j-2),board[i][j],(i,j),results, 'l')
-                        print (results)
+                        new_board = deepcopy(board)
+                        add_results(results, possible_moves,(i,j),new_board)
 
                 if (i-1 >= 0) and (j+1 < N):
                     if (board[i-1][j+1] == 0):
                         #not out of bound, and free move "right" up
-                        possible_moves.append( [(i,j), (i-1, j+1), 0]  )
+                        new_board = deepcopy(board)
+                        new_board[i-1][j+1] = 0 #killed it
+                        new_board[i][j] = 0     #move me
+                        new_board[i-2][j+2] = board[i][j] #there
+                        possible_moves.append( [(i,j), (i-1, j+1), 0, new_board]  )
 
                     elif (board[i-1][j+1] <= -1) and (i-2>=0 and j+2<N) and board[i-2][j+2] == 0:
                         new_board = deepcopy(board)
@@ -216,7 +278,8 @@ def where_can_i_move_next(board, player=1):
                         new_board[i-2][j+2] = board[i][j]
                         results = []
                         sequence_of_moves (new_board, (i,j),(i-2,j+2),board[i][j],(i,j),results,'r')
-                        print (results)
+                        new_board = deepcopy(board)
+                        add_results(results, possible_moves,(i,j),new_board)
 
 
             elif board[i][j] <= -1 and player == -1:
@@ -237,16 +300,21 @@ def where_can_i_move_next(board, player=1):
                         moves = sequence_of_moves (board, (i,j),(i-2,j+2),-1,(i,j))
 
             #else is zero .. skip .. no elses btw.
-    print (ev)
+    for poss in possible_moves:
+        br = Board(N)
+
+        br.draw_board(poss[3])
+
+
     return (possible_moves)
 
 # board = init_board(N)
 zeros = [0,0,0,0,0,0,0,0]
-test_board = [  [0,0,0,1,0,0,0,0],
+test_board = [  [0,0,0,0,0,0,0,0],
                 [0,0,-1,0,-1,0,0,0],
                 [0,0,0,0,0,0,0,0],
                 [-1,0,-1,0,-1,0,-1,0],
-                [0,0,0,1,0,0,0,0],
+                [0,0,0,2,0,0,0,0],
                 [-1,0,-1,0,-1,0,-1,0],
                 [0,0,0,0,0,0,0,0],
                 [-1,0,-1,0,-1,0,-1,0]
