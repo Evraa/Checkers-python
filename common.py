@@ -85,14 +85,17 @@ def sequence_of_moves (board, start, end, player,ultimate_start,results = [],seq
                 board[end[0]+1][end[1]-1] = 0
                 board[end[0]][end[1]] = 0
                 board[end[0]+2][end[1]-2] = 1
-                seq+= 'L' + sequence_of_moves(board, end, (end[0]+2 , end[1]-2), 1,ultimate_start)
+                seqq = seq + 'L'
+                seq+= sequence_of_moves(board, end, (end[0]+2 , end[1]-2), 1,ultimate_start, results, seqq)
             if end[0]+2 < N and end[1]+2 < N and board[end[0]+1][end[1]+1] <= -1:
                 #it can move right
                 board[end[0]+1][end[1]+1] = 0
                 board[end[0]][end[1]] = 0
                 board[end[0]+2][end[1]+2] = 1
-                seq+= 'R' + sequence_of_moves(board, end, (end[0]+2 , end[1]+2), 1,ultimate_start)
+                seqq = seq + 'R'
+                seqq+= sequence_of_moves(board, end, (end[0]+2 , end[1]+2), 1,ultimate_start,results,seqq)
             #not out of bound, but no more moves allowed!
+            append_this(results, seq)
             return seq+ "0"
         else:
             #out of bound
@@ -189,7 +192,7 @@ def where_can_i_move_next(board, player=1):
                         new_board[i][j] = 0
                         new_board[i+2][j-2] = board[i][j]
                         results = []
-                        moves = sequence_of_moves (new_board, (i,j),(i+2,j-2),board[i][j],(i,j),results,'L')
+                        sequence_of_moves (new_board, (i,j),(i+2,j-2),board[i][j],(i,j),results,'L')
                         print(results)
 
                 if (i+1 < N) and (j+1 < N):
@@ -202,7 +205,7 @@ def where_can_i_move_next(board, player=1):
                         new_board[i][j] = 0
                         new_board[i+2][j+2] = board[i][j]
                         results = []
-                        moves = sequence_of_moves (new_board, (i,j),(i+2,j+2),board[i][j],(i,j),results,'R')
+                        sequence_of_moves (new_board, (i,j),(i+2,j+2),board[i][j],(i,j),results,'R')
                         print (results)
 
             if board[i][j] == 2 and player == 1:
