@@ -1,6 +1,6 @@
-from constants import N
 from math import ceil, floor
 from copy import deepcopy
+from constants import N
 
 def init_board(N):
     board = []
@@ -37,31 +37,8 @@ def init_board(N):
             board.append(zeros)
     return board
 
-def sequence_of_moves (board, start, end, player):
-    seq = ""
-    if player == 1:
-        if end[0] < N and (end[1] >= 0 and end[1] < N):
-            #not out of bound
-            if board[end[0]][end[1]] == 0: 
-                if end[0]+2 < N and end[1]-2 >= 0 and board[end[0]+1][end[1]-1] <= -1:
-                    #it can move left
-                    board[end[0]+1][end[1]-1] = 0
-                    seq+= 'L' + sequence_of_moves(board, end, (end[0]+2 , end[1]-2), 1)
-                if end[0]+2 < N and end[1]+2 < N and board[end[0]+1][end[1]+1] <= -1:
-                    #it can move right
-                    board[end[0]+1][end[1]+1] = 0
-                    seq+= 'R' + sequence_of_moves(board, end, (end[0]+2 , end[1]+2), 1)
-                #not out of bound, but no more moves allowed!
-                return seq+ "0"
-        else:
-            #out of bound
-            return seq+ "0"
-    
-    elif player == -1:
-        pass
-
-
 def interpret_moves(moves):
+    print(moves)
     sequences = []
     sequences.append(moves[0]+moves[1])
     i = 1
@@ -79,11 +56,88 @@ def interpret_moves(moves):
             sequences.append(start)
             i+= 1
     real_seq = []
+    real_seq.append(sequences[0])
     for seq in sequences:
         if len(seq) > 1:
             real_seq.append(seq)
     print (real_seq)
     return real_seq
+
+
+from board import *
+def sequence_of_moves (board, start, end, player,ultimate_start):
+    br = Board(N)
+
+    br.draw_board(board)
+
+    seq = ""
+    if player == 1:
+        if end[0] < N and (end[1] >= 0 and end[1] < N):
+            #not out of bound
+            # if board[end[0]][end[1]] == 0: 
+            if end[0]+2 < N and end[1]-2 >= 0 and board[end[0]+1][end[1]-1] <= -1:
+                #it can move left
+                board[end[0]+1][end[1]-1] = 0
+                board[end[0]][end[1]] = 0
+                board[end[0]+2][end[1]-2] = 1
+                seq+= 'L' + sequence_of_moves(board, end, (end[0]+2 , end[1]-2), 1,ultimate_start)
+            if end[0]+2 < N and end[1]+2 < N and board[end[0]+1][end[1]+1] <= -1:
+                #it can move right
+                board[end[0]+1][end[1]+1] = 0
+                board[end[0]][end[1]] = 0
+                board[end[0]+2][end[1]+2] = 1
+                seq+= 'R' + sequence_of_moves(board, end, (end[0]+2 , end[1]+2), 1,ultimate_start)
+            #not out of bound, but no more moves allowed!
+            return seq+ "0"
+        else:
+            #out of bound
+            return seq+ "0"
+    
+    elif player == 2:
+        #player 1 king
+        if end[0] < N and (end[1] >= 0 and end[1] < N):
+            #not out of bound
+            # if board[end[0]][end[1]] == 0 or end==ultimate_start: 
+            if end[0]+2 < N and end[1]-2 >= 0 and board[end[0]+1][end[1]-1] <= -1:
+                #it can move left down
+                new_board = deepcopy(board)
+                new_board[end[0]+1][end[1]-1] = 0
+                new_board[end[0]][end[1]] = 0
+                new_board[end[0]+2][end[1]-2] = 2
+                seq+= 'L' + sequence_of_moves(new_board, end, (end[0]+2 , end[1]-2), 2,ultimate_start)
+            if end[0]+2 < N and end[1]+2 < N and board[end[0]+1][end[1]+1] <= -1:
+                #it can move right down
+                new_board = deepcopy(board)
+                new_board[end[0]+1][end[1]+1] = 0
+                new_board[end[0]][end[1]] = 0
+                new_board[end[0]+2][end[1]+2] = 2
+                seq+= 'R' + sequence_of_moves(new_board, end, (end[0]+2 , end[1]+2), 2,ultimate_start)
+            if end[0]-2 >=0 and end[1]-2 >= 0 and board[end[0]-1][end[1]-1] <= -1:
+                # it can move up left
+                new_board = deepcopy(board)
+                new_board[end[0]-1][end[1]-1] = 0
+                new_board[end[0]][end[1]] = 0
+                new_board[end[0]-2][end[1]-2] = 2
+                seq+= 'l' + sequence_of_moves(new_board, end, (end[0]-2 , end[1]-2), 2,ultimate_start)
+            if end[0]-2 >=0 and end[1]+2 < N and board[end[0]-1][end[1]+1] <= -1:
+                # it can move up right
+                new_board = deepcopy(board)
+                new_board[end[0]-1][end[1]+1] = 0
+                new_board[end[0]][end[1]] = 0
+                new_board[end[0]-2][end[1]+2] = 2
+                seq+= 'r' + sequence_of_moves(new_board, end, (end[0]-2 , end[1]+2), 2,ultimate_start)
+
+            #not out of bound, but no more moves allowed!
+            return seq+ "0"
+        else:
+            #out of bound
+            return seq+ "0"
+
+    elif player == -1:
+        pass
+    elif player == -2:
+        pass
+
 
 
 
@@ -105,26 +159,61 @@ def where_can_i_move_next(board, player=1):
             #pos: player 1 whther it was soldier or king
             #neg: player 2 ~
             if board[i][j] >= 1 and player == 1:
-                #player 1
+                #player 1 soldier or king
                 if (i+1 < N) and (j-1 >= 0):
                     #not out of bound
                     if (board[i+1][j-1] == 0):
-                        #can move left
+                        #can move left down
                         possible_moves.append( [(i,j), (i+1, j-1), 0]  )
+                    #sequence of moves may occur
                     elif (board[i+1][j-1] <= -1) and (i+2<N and j-2 >=0):
                         new_board = deepcopy(board)
                         new_board[i+1][j-1] = 0
-                        moves = "L0" + sequence_of_moves (new_board, (i,j),(i+2,j-2),1)
+                        new_board[i][j] = 0
+                        new_board[i+2][j-2] = board[i][j]
+                        moves = "L0" + sequence_of_moves (new_board, (i,j),(i+2,j-2),board[i][j],(i,j))
                         interpret_moves(moves.split("0"))
+                        
 
                 if (i+1 < N) and (j+1 < N):
                     if (board[i+1][j+1] == 0):
-                        #not out of bound, and free move "right"
+                        #not out of bound, and free move "right" down
                         possible_moves.append( [(i,j), (i+1, j+1), 0]  )
                     elif (board[i+1][j+1] <= -1):
                         new_board = deepcopy(board)
                         new_board[i+1][j+1] = 0
-                        moves = 'R0' + sequence_of_moves (new_board, (i,j),(i+2,j+2),1)
+                        new_board[i][j] = 0
+                        new_board[i+2][j+2] = board[i][j]
+                        moves = 'R0' + sequence_of_moves (new_board, (i,j),(i+2,j+2),board[i][j],(i,j))
+                        interpret_moves(moves.split("0"))
+
+            if board[i][j] == 2 and player == 1:
+                ######### player 1 king #######
+                #check if it can go up! 
+                if (i-1 >= 0) and (j-1 >= 0):
+                    #not out of bound
+                    if (board[i-1][j-1] == 0):
+                        #can move left
+                        possible_moves.append( [(i,j), (i-1, j-1), 0]  )
+                    #sequence of moves may occur
+                    elif (board[i-1][j-1] <= -1) and (i-2>=0 and j-2 >=0):
+                        new_board = deepcopy(board)
+                        new_board[i-1][j-1] = 0
+                        new_board[i][j] = 0
+                        new_board[i-2][j-2] = board[i][j]
+                        moves = "l0" + sequence_of_moves (new_board, (i,j),(i-2,j-2),board[i][j],(i,j))
+                        interpret_moves(moves.split("0"))
+
+                if (i-1 >= 0) and (j+1 < N):
+                    if (board[i-1][j+1] == 0):
+                        #not out of bound, and free move "right"
+                        possible_moves.append( [(i,j), (i-1, j+1), 0]  )
+                    elif (board[i-1][j+1] <= -1):
+                        new_board = deepcopy(board)
+                        new_board[i-1][j+1] = 0
+                        new_board[i][j] = 0
+                        new_board[i-2][j+2] = board[i][j]
+                        moves = 'r0' + sequence_of_moves (new_board, (i,j),(i-2,j+2),board[i][j],(i,j))
                         interpret_moves(moves.split("0"))
 
             elif board[i][j] <= -1 and player == -1:
@@ -135,27 +224,28 @@ def where_can_i_move_next(board, player=1):
                         #can move left
                         possible_moves.append( [(i,j), (i-1, j-1), 0]  )
                     elif (board[i-1][j-1] >= 1):
-                        moves = sequence_of_moves (board, (i,j),(i-2,j-2),-1)
+                        moves = sequence_of_moves (board, (i,j),(i-2,j-2),-1,(i,j))
 
                 if (i-1 >= 0) and (j+1 < N):
                     if (board[i-1][j+1] == 0):
                         #not out of bound, and free move "right"
                         possible_moves.append( [(i,j), (i-1, j+1), 0]  )
                     elif (board[i-1][j+1] >= 1):
-                        moves = sequence_of_moves (board, (i,j),(i-2,j+2),-1)
+                        moves = sequence_of_moves (board, (i,j),(i-2,j+2),-1,(i,j))
 
             #else is zero .. skip .. no elses btw.
     return (possible_moves)
 
 # board = init_board(N)
 zeros = [0,0,0,0,0,0,0,0]
-test_board = [  [0,0,0,1,0,0,0,0],
+test_board = [  [0,0,0,0,0,0,0,0],
                 [0,0,-1,0,-1,0,0,0],
                 [0,0,0,0,0,0,0,0],
                 [-1,0,-1,0,-1,0,-1,0],
-                [0,0,0,0,0,0,0,0],
+                [0,0,0,2,0,0,0,0],
                 [-1,0,-1,0,-1,0,-1,0],
                 [0,0,0,0,0,0,0,0],
                 [-1,0,-1,0,-1,0,-1,0]
             ]
-(where_can_i_move_next(test_board))
+
+where_can_i_move_next(test_board)

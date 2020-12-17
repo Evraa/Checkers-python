@@ -7,4 +7,3 @@ br = Board(N)
 
 br.draw_board(test_board)
 
-where_can_i_move_next(test_board)
