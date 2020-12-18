@@ -186,6 +186,7 @@ def where_can_i_move_next(board, player=1, verbose=False):
         + Given player (1/-1) and the board settings, decide the pieces that can move next.
         + Returns: list of possible moves
             + Possible_move: [typle of start, tuple of end, how_many_killed, new_board]
+
         + Logic is divided into groups:
         + Group 1: for player 1, divided into two sections
             + section 1: for soldiers and kings, check if they can move down-left or down-right
@@ -308,12 +309,22 @@ def where_can_i_move_next(board, player=1, verbose=False):
                         moves = sequence_of_moves (board, (i,j),(i-2,j+2),-1,(i,j))
 
             #else is zero .. skip .. no elses btw.
+    forced = False
+    possible_moves_forced = []
+    for pos in possible_moves:
+        if pos[2] >= 1:
+            possible_moves_forced.append(pos)
+            forced = True
+            
+    if forced:
+        del possible_moves
+        possible_moves = possible_moves_forced
+
     if verbose:
         for poss in possible_moves:
             br = Board(N)
             br.draw_board(poss[3])
-
-
+    
     return possible_moves
 
 # board = init_board(N)
