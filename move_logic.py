@@ -123,10 +123,23 @@ def sequence_of_moves (board, start, end, player,results = [],seq=""):
 
 
 def add_results(results, possible_moves, start, orig_board):
+    '''
+        + Given a sequence like this RrlL, this function interpret this sequence into actual moves and kills.
+        + R: down Right
+        + r: up Right
+        + l: up Left
+        + L: down Left
+        + Inputs:
+            + results: list of one or multiple sequence(s)
+            + possible_moves: where we update (append) new possible moves
+            + start: this piece's initail place
+            + orig_board: the original board, useful and necessary for king moves tracking
+        + Outputs: None, just appending to possible_moves variable reference
+
+        + Logic is simple, updat the start and the board with the sequence char (R,r,L,l)
+    '''
     for result in results:
         possible_move = [start]
-        # chars = result.split(' ')
-        # chars = result.split('')
         board = deepcopy(orig_board)
         cost = 0
         i,j = start[0],start[1]
@@ -173,17 +186,24 @@ def where_can_i_move_next(board, player=1, verbose=False):
         + Given player (1/-1) and the board settings, decide the pieces that can move next.
         + Returns: list of possible moves
             + Possible_move: [typle of start, tuple of end, how_many_killed, new_board]
+        + Logic is divided into groups:
+        + Group 1: for player 1, divided into two sections
+            + section 1: for soldiers and kings, check if they can move down-left or down-right
+                + checks if they can have multiple moves and kills
+            + section 2: for kings only, check if the can move up-left or up-right
+                + checks if they can have multiple moves also.
+        + Group 2: same for player 2 
     '''
-    #(start, end, wining_cost), wining_cost: how many pieces I ate!
+    #where the moves are stored at
     possible_moves = []
-    
+    #loop throught the entire board for player 1/-1
     for i in range(N):
         for j in range (N):
+            #no pawns are here from the start.
             if  board[i][j] == 0 :
                 continue
             
             #pos: player 1 whther it was soldier or king
-            #neg: player 2 ~
             if board[i][j] >= 1 and player == 1:
                 #player 1 soldier or king
                 if (i+1 < N) and (j-1 >= 0):
@@ -191,17 +211,17 @@ def where_can_i_move_next(board, player=1, verbose=False):
                     if (board[i+1][j-1] == 0):
                         #can move left down
                         new_board = deepcopy(board)
-                        new_board[i+1][j-1] = 0 #killed it
-                        new_board[i][j] = 0     #move me
-                        new_board[i+2][j-2] = board[i][j] #there
+                        new_board[i+1][j-1] = 0             #killed it
+                        new_board[i][j] = 0                 #move me
+                        new_board[i+2][j-2] = board[i][j]   #there
                         possible_moves.append( [(i,j), (i+1, j-1), 0, new_board]  )
 
                     #sequence of moves may occur
                     elif (board[i+1][j-1] <= -1) and (i+2<N and j-2 >=0) and board[i+2][j-2] == 0:
                         new_board = deepcopy(board)
-                        new_board[i+1][j-1] = 0
-                        new_board[i][j] = 0
-                        new_board[i+2][j-2] = board[i][j] #2
+                        new_board[i+1][j-1] = 0             #killed it
+                        new_board[i][j] = 0                 #move me
+                        new_board[i+2][j-2] = board[i][j]   #there
                         results = []
                         sequence_of_moves (new_board, (i,j),(i+2,j-2),board[i][j],results,'L')
                         new_board = deepcopy(board)
@@ -211,40 +231,40 @@ def where_can_i_move_next(board, player=1, verbose=False):
                     if (board[i+1][j+1] == 0):
                         #not out of bound, and free move "right" down
                         new_board = deepcopy(board)
-                        new_board[i+1][j+1] = 0 #killed it
-                        new_board[i][j] = 0     #move me
-                        new_board[i+2][j+2] = board[i][j] #there
+                        new_board[i+1][j+1] = 0             #killed it
+                        new_board[i][j] = 0                 #move me
+                        new_board[i+2][j+2] = board[i][j]   #there
                         possible_moves.append( [(i,j), (i+1, j+1), 0, new_board]  )
 
                     elif (board[i+1][j+1] <= -1) and (i+2<N and j+2 <N) and board[i+2][j+2] == 0:
                         new_board = deepcopy(board)
-                        new_board[i+1][j+1] = 0
-                        new_board[i][j] = 0
-                        new_board[i+2][j+2] = board[i][j]
+                        new_board[i+1][j+1] = 0             #killed it
+                        new_board[i][j] = 0                 #move me
+                        new_board[i+2][j+2] = board[i][j]   #there
                         results = []
                         sequence_of_moves (new_board, (i,j),(i+2,j+2),board[i][j],results,'R')
                         new_board = deepcopy(board)
                         add_results(results, possible_moves,(i,j),new_board)
 
             if board[i][j] == 2 and player == 1:
-                ######### player 1 king #######
+                ######### player 1 king ONLY#######
                 #check if it can go up! 
                 if (i-1 >= 0) and (j-1 >= 0):
                     #not out of bound
                     if (board[i-1][j-1] == 0):
                         #can move left
                         new_board = deepcopy(board)
-                        new_board[i-1][j-1] = 0 #killed it
-                        new_board[i][j] = 0     #move me
-                        new_board[i-2][j-2] = board[i][j] #there
+                        new_board[i-1][j-1] = 0             #killed it
+                        new_board[i][j] = 0                 #move me
+                        new_board[i-2][j-2] = board[i][j]   #there
                         possible_moves.append( [(i,j), (i-1, j-1), 0, new_board]  )
 
                     #sequence of moves may occur
                     elif (board[i-1][j-1] <= -1) and (i-2>=0 and j-2 >=0) and board[i-2][j-2] == 0:
                         new_board = deepcopy(board)
-                        new_board[i-1][j-1] = 0
-                        new_board[i][j] = 0
-                        new_board[i-2][j-2] = board[i][j]
+                        new_board[i-1][j-1] = 0             #killed it
+                        new_board[i][j] = 0                 #move me
+                        new_board[i-2][j-2] = board[i][j]   #there    
                         results = []
                         sequence_of_moves (new_board, (i,j),(i-2,j-2),board[i][j],results, 'l')
                         new_board = deepcopy(board)
@@ -254,16 +274,16 @@ def where_can_i_move_next(board, player=1, verbose=False):
                     if (board[i-1][j+1] == 0):
                         #not out of bound, and free move "right" up
                         new_board = deepcopy(board)
-                        new_board[i-1][j+1] = 0 #killed it
-                        new_board[i][j] = 0     #move me
-                        new_board[i-2][j+2] = board[i][j] #there
+                        new_board[i-1][j+1] = 0             #killed it
+                        new_board[i][j] = 0                 #move me
+                        new_board[i-2][j+2] = board[i][j]   #there
                         possible_moves.append( [(i,j), (i-1, j+1), 0, new_board]  )
 
                     elif (board[i-1][j+1] <= -1) and (i-2>=0 and j+2<N) and board[i-2][j+2] == 0:
                         new_board = deepcopy(board)
-                        new_board[i-1][j+1] = 0
-                        new_board[i][j] = 0
-                        new_board[i-2][j+2] = board[i][j]
+                        new_board[i-1][j+1] = 0             #killed it
+                        new_board[i][j] = 0                 #move me
+                        new_board[i-2][j+2] = board[i][j]   #there
                         results = []
                         sequence_of_moves (new_board, (i,j),(i-2,j+2),board[i][j],results,'r')
                         new_board = deepcopy(board)
