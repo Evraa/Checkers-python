@@ -1,9 +1,11 @@
 from board import *
 from common import *
 from constants import N
-
-board = init_board(N)
+from move_logic import where_can_i_move_next
+# board = init_board(N)
+board = rand_init(N)
 br = Board(N)
 
-br.draw_board(test_board)
+br.draw_board(board)
 
+where_can_i_move_next(board,1,True)

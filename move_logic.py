@@ -213,7 +213,7 @@ def where_can_i_move_next(board, player=1, verbose=False):
                         new_board = deepcopy(board)
                         new_board[i+1][j-1] = 0             #killed it
                         new_board[i][j] = 0                 #move me
-                        new_board[i+2][j-2] = board[i][j]   #there
+                        new_board[i+1][j-1] = board[i][j]   #there
                         possible_moves.append( [(i,j), (i+1, j-1), 0, new_board]  )
 
                     #sequence of moves may occur
@@ -233,7 +233,7 @@ def where_can_i_move_next(board, player=1, verbose=False):
                         new_board = deepcopy(board)
                         new_board[i+1][j+1] = 0             #killed it
                         new_board[i][j] = 0                 #move me
-                        new_board[i+2][j+2] = board[i][j]   #there
+                        new_board[i+1][j+1] = board[i][j]   #there
                         possible_moves.append( [(i,j), (i+1, j+1), 0, new_board]  )
 
                     elif (board[i+1][j+1] <= -1) and (i+2<N and j+2 <N) and board[i+2][j+2] == 0:
@@ -256,7 +256,7 @@ def where_can_i_move_next(board, player=1, verbose=False):
                         new_board = deepcopy(board)
                         new_board[i-1][j-1] = 0             #killed it
                         new_board[i][j] = 0                 #move me
-                        new_board[i-2][j-2] = board[i][j]   #there
+                        new_board[i-1][j-1] = board[i][j]   #there
                         possible_moves.append( [(i,j), (i-1, j-1), 0, new_board]  )
 
                     #sequence of moves may occur
@@ -276,7 +276,7 @@ def where_can_i_move_next(board, player=1, verbose=False):
                         new_board = deepcopy(board)
                         new_board[i-1][j+1] = 0             #killed it
                         new_board[i][j] = 0                 #move me
-                        new_board[i-2][j+2] = board[i][j]   #there
+                        new_board[i-1][j+1] = board[i][j]   #there
                         possible_moves.append( [(i,j), (i-1, j+1), 0, new_board]  )
 
                     elif (board[i-1][j+1] <= -1) and (i-2>=0 and j+2<N) and board[i-2][j+2] == 0:
