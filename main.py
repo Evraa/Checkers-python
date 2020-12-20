@@ -11,3 +11,4 @@ br = Board(N)
 
 br.draw_board(board)
 where_can_i_move_next(board,1,True)
+where_can_i_move_next(board,-1,True)
