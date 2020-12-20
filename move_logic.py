@@ -115,11 +115,91 @@ def sequence_of_moves (board, start, end, player,results = [],seq=""):
         else:
             #out of bound
             return seq+ "0"
-
+    
     elif player == -1:
-        pass
+        if end[0] >= 0 and (end[1] >= 0 and end[1] < N):
+            #not out of bound
+            #Can I move up-left? Is the intermidate cell an enemy? Is the terminal cell empty?
+            if end[0]-2 >= 0 and end[1]-2 >= 0 and board[end[0]-1][end[1]-1] >= 1 and board[end[0]-2][end[1]-2]==0:
+                #it can move down-left
+                board[end[0]-1][end[1]-1] = 0   #kill the enemy pawn
+                board[end[0]][end[1]] = 0       #remove me from there
+                board[end[0]-2][end[1]-2] = -1   #move me towards the new destination
+                seqq = seq + 'l'                #add this move to the sequene
+                #Check if there's more!
+                seqq+= sequence_of_moves(board, end, (end[0]-2 , end[1]-2), 1, results, seqq)
+
+            #Can I move up-right? Is the intermidate cell an enemy? Is the terminal cell empty?
+            if end[0]-2 >= 0 and end[1]+2 < N and board[end[0]-1][end[1]+1] >= 1 and board[end[0]-2][end[1]+2]==0:
+                #it can move down-right
+                board[end[0]-1][end[1]+1] = 0   #kill the enemy pawn
+                board[end[0]][end[1]] = 0       #remove me from there
+                board[end[0]-2][end[1]+2] = -1   #move me towards the new destination
+                seqq = seq + 'r'                #add this move to the sequene
+                #Check if there's more!
+                seqq+= sequence_of_moves(board, end, (end[0]-2 , end[1]+2), 1,results,seqq)
+            #not out of bound, but no more moves allowed!
+            append_this(results, seq)
+            return seq+ "0"
+        else:
+            #out of bound
+            #no need to append anything!
+            return seq+ "0"
+
     elif player == -2:
-        pass
+        #player 2 king (-2)
+        if end[0] >= 0 and (end[1] >= 0 and end[1] < N):
+            #not out of bound
+            #Can I move down-left? Is the intermidate cell an enemy? Is the terminal cell empty?
+            if end[0]+2 < N and end[1]-2 >= 0 and board[end[0]+1][end[1]-1] >= 1  and board[end[0]+2][end[1]-2]==0:
+                #it can move left down
+                new_board = deepcopy(board)         #A new copy cuz, we can turn around to the start
+                new_board[end[0]+1][end[1]-1] = 0   #kill the enemy pawn
+                new_board[end[0]][end[1]] = 0       #remove me from there
+                new_board[end[0]+2][end[1]-2] = -2  #move me towards the new destination
+                seqq = seq + 'L'                    #add this move to the sequene
+                #Check if there's more!
+                seqq += sequence_of_moves(new_board, end, (end[0]+2 , end[1]-2), 2,results,seqq)
+
+            #Can I move down-right? Is the intermidate cell an enemy? Is the terminal cell empty?
+            if end[0]+2 < N and end[1]+2 < N and board[end[0]+1][end[1]+1] >= 1 and board[end[0]+2][end[1]+2]==0:
+                #it can move right down
+                new_board = deepcopy(board)         #A new copy cuz, we can turn around to the start
+                new_board[end[0]+1][end[1]+1] = 0   #kill the enemy pawn
+                new_board[end[0]][end[1]] = 0       #remove me from there
+                new_board[end[0]+2][end[1]+2] = -2   #move me towards the new destination
+                seqq = seq + 'R'                    #add this move to the sequene
+                #Check if there's more!
+                seqq += sequence_of_moves(new_board, end, (end[0]+2 , end[1]+2), 2,results,seqq)
+            
+            #Can I move up-left? Is the intermidate cell an enemy? Is the terminal cell empty?
+            if end[0]-2 >=0 and end[1]-2 >= 0 and board[end[0]-1][end[1]-1] >= 1 and board[end[0]-2][end[1]-2]==0:
+                # it can move up left
+                new_board = deepcopy(board)         #A new copy cuz, we can turn around to the start
+                new_board[end[0]-1][end[1]-1] = 0   #kill the enemy pawn    
+                new_board[end[0]][end[1]] = 0       #remove me from there
+                new_board[end[0]-2][end[1]-2] = -2   #move me towards the new destination
+                seqq = seq + 'l'                    #add this move to the sequene
+                #Check if there's more!
+                seqq += sequence_of_moves(new_board, end, (end[0]-2 , end[1]-2), 2,results,seqq)
+                
+            #Can I move up-right? Is the intermidate cell an enemy? Is the terminal cell empty?
+            if end[0]-2 >=0 and end[1]+2 < N and board[end[0]-1][end[1]+1] >= 1 and board[end[0]-2][end[1]+2]==0:
+                # it can move up right
+                new_board = deepcopy(board)         #A new copy cuz, we can turn around to the start
+                new_board[end[0]-1][end[1]+1] = 0   #kill the enemy pawn    
+                new_board[end[0]][end[1]] = 0       #remove me from there
+                new_board[end[0]-2][end[1]+2] = -2   #move me towards the new destination
+                seqq = seq + 'r'                    #add this move to the sequene
+                #Check if there's more!
+                seqq += sequence_of_moves(new_board, end, (end[0]-2 , end[1]+2), 2,results,seqq)
+
+            #not out of bound, but no more moves allowed!
+            append_this(results, seq)
+            return seq+ "0"
+        else:
+            #out of bound
+            return seq+ "0"
 
 
 def add_results(results, possible_moves, start, orig_board):
