@@ -1,7 +1,6 @@
 #Global imports
 from math import ceil, floor
 from numpy import random
-from copy import deepcopy
 #Local imports and Global Variables
 from constants import N
 
@@ -54,12 +53,13 @@ def rand_init(N):
         for j in range (N):
             if((i%2) != ((j+1)%2) and N%2 == 0) or ((i%2) != (j%2) and N%2 == 1):
                 continue
-            elif i%2==1:
+            # elif i%2==1:
+            elif i<3 or i > 4:
                 board[i][j] = 0
             else:
                 ev = random.randint(3)
                 if i < N//2: 
-                    board[i][j] = deepcopy(ev)
+                    board[i][j] = (ev)
                 else:
-                    board[i][j] = -deepcopy(ev)
+                    board[i][j] = -(ev)
     return board

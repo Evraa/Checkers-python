@@ -1,5 +1,5 @@
-from board import *
-from common import *
+from board import Board
+from common import rand_init, init_board
 from constants import N
 from move_logic import where_can_i_move_next
 # board = init_board(N)
