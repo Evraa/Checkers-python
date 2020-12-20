@@ -72,6 +72,5 @@ class Board:
                     board_color = self.board_color_2
                 else:
                     board_color = self.board_color_1
-
         self.window.getMouse()
     
