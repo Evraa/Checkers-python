@@ -291,35 +291,108 @@ def where_can_i_move_next(board, player=1, verbose=False):
                         add_results(results, possible_moves,(i,j),new_board)
 
 
-            elif board[i][j] <= -1 and player == -1:
-                #player 2
+            #neg: player 2 whther it was soldier or king
+            if board[i][j] <= -1 and player == -1:
+                #player 2 soldier or king
+                # LEFT UP
                 if (i-1 >= 0) and (j-1 >= 0):
                     #not out of bound
                     if (board[i-1][j-1] == 0):
-                        #can move left
-                        possible_moves.append( [(i,j), (i-1, j-1), 0]  )
-                    elif (board[i-1][j-1] >= 1):
-                        moves = sequence_of_moves (board, (i,j),(i-2,j-2),-1,(i,j))
+                        #can move left down
+                        new_board = deepcopy(board)
+                        new_board[i-1][j-1] = 0             #killed it
+                        new_board[i][j] = 0                 #move me
+                        new_board[i-1][j-1] = board[i][j]   #there
+                        possible_moves.append( [(i,j), (i-1, j-1), 0, new_board]  )
 
+                    #sequence of moves may occur
+                    elif (board[i-1][j-1] >= 1) and (i-2>=0 and j-2 >=0) and board[i-2][j-2] == 0:
+                        new_board = deepcopy(board)
+                        new_board[i-1][j-1] = 0             #killed it
+                        new_board[i][j] = 0                 #move me
+                        new_board[i-2][j-2] = board[i][j]   #there
+                        results = []
+                        sequence_of_moves (new_board, (i,j),(i-2,j-2),board[i][j],results,'l')
+                        new_board = deepcopy(board)
+                        add_results(results, possible_moves,(i,j),new_board)
+                # Right Up
                 if (i-1 >= 0) and (j+1 < N):
                     if (board[i-1][j+1] == 0):
-                        #not out of bound, and free move "right"
-                        possible_moves.append( [(i,j), (i-1, j+1), 0]  )
-                    elif (board[i-1][j+1] >= 1):
-                        moves = sequence_of_moves (board, (i,j),(i-2,j+2),-1,(i,j))
+                        #not out of bound, and free move "right" down
+                        new_board = deepcopy(board)
+                        new_board[i-1][j+1] = 0             #killed it
+                        new_board[i][j] = 0                 #move me
+                        new_board[i-1][j+1] = board[i][j]   #there
+                        possible_moves.append( [(i,j), (i-1, j+1), 0, new_board]  )
+
+                    elif (board[i-1][j+1] >= 1) and (i-2>=0 and j+2 <N) and board[i-2][j+2] == 0:
+                        new_board = deepcopy(board)
+                        new_board[i-1][j+1] = 0             #killed it
+                        new_board[i][j] = 0                 #move me
+                        new_board[i-2][j+2] = board[i][j]   #there
+                        results = []
+                        sequence_of_moves (new_board, (i,j),(i-2,j+2),board[i][j],results,'r')
+                        new_board = deepcopy(board)
+                        add_results(results, possible_moves,(i,j),new_board)
+
+            if board[i][j] == -2 and player == -1:
+                ######### player 2 king ONLY#######
+                #check if it can go DOWN! 
+                if (i+1 < N) and (j-1 >= 0):
+                    #not out of bound
+                    if (board[i+1][j-1] == 0):
+                        #can move left
+                        new_board = deepcopy(board)
+                        new_board[i+1][j-1] = 0             #killed it
+                        new_board[i][j] = 0                 #move me
+                        new_board[i+1][j-1] = board[i][j]   #there
+                        possible_moves.append( [(i,j), (i+1, j-1), 0, new_board]  )
+
+                    #sequence of moves may occur
+                    elif (board[i+1][j-1] >= 1) and (i+2>=0 and j-2 >=0) and board[i+2][j-2] == 0:
+                        new_board = deepcopy(board)
+                        new_board[i+1][j-1] = 0             #killed it
+                        new_board[i][j] = 0                 #move me
+                        new_board[i+2][j-2] = board[i][j]   #there    
+                        results = []
+                        sequence_of_moves (new_board, (i,j),(i+2,j-2),board[i][j],results, 'L')
+                        new_board = deepcopy(board)
+                        add_results(results, possible_moves,(i,j),new_board)
+
+                if (i+1 < N) and (j+1 < N):
+                    if (board[i+1][j+1] == 0):
+                        #not out of bound, and free move "right" up
+                        new_board = deepcopy(board)
+                        new_board[i+1][j+1] = 0             #killed it
+                        new_board[i][j] = 0                 #move me
+                        new_board[i+1][j+1] = board[i][j]   #there
+                        possible_moves.append( [(i,j), (i+1, j+1), 0, new_board]  )
+
+                    elif (board[i+1][j+1] >= 1) and (i+2<N and j+2<N) and board[i+2][j+2] == 0:
+                        new_board = deepcopy(board)
+                        new_board[i+1][j+1] = 0             #killed it
+                        new_board[i][j] = 0                 #move me
+                        new_board[i+2][j+2] = board[i][j]   #there
+                        results = []
+                        sequence_of_moves (new_board, (i,j),(i+2,j+2),board[i][j],results,'R')
+                        new_board = deepcopy(board)
+                        add_results(results, possible_moves,(i,j),new_board)
 
             #else is zero .. skip .. no elses btw.
+
+    # Logic for only appending FORCED moves allowed, that ocurrs when an attack move is possible.
     forced = False
+    # Collect the possible forced moves allowed here
     possible_moves_forced = []
     for pos in possible_moves:
         if pos[2] >= 1:
             possible_moves_forced.append(pos)
             forced = True
-            
+    # Swap if.
     if forced:
         del possible_moves
         possible_moves = possible_moves_forced
-
+    # Show results in graphics mode.
     if verbose:
         for poss in possible_moves:
             br = Board(N)
