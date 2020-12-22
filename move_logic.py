@@ -472,6 +472,15 @@ def where_can_i_move_next(board, player=1, verbose=False):
     if forced:
         del possible_moves
         possible_moves = possible_moves_forced
+    # Create Kings
+    for pos in possible_moves:
+        i,j = pos[1][0],pos[1][1]
+        if player == 1:
+            if pos[3][i][j] == 1 and i == N-1:
+                 pos[3][i][j] = 2
+        elif player == -1:
+            if pos[3][i][j] == -1 and i == 0:
+                 pos[3][i][j] = -2
     # Show results in graphics mode.
     if verbose:
         for poss in possible_moves:

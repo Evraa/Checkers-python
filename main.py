@@ -1,10 +1,11 @@
 from board import Board
-from common import rand_init, init_board
+from common import rand_init, init_board, spec_esight
 from constants import N
 from move_logic import where_can_i_move_next
 # board = init_board(N)
 
-board = rand_init(N)
+# board = rand_init(N)
+board = spec_esight()
 print (board)
 
 br = Board(N)
