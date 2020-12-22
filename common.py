@@ -76,3 +76,12 @@ def spec_esight():
             [0,1,0,1,0,1,0,1],
             list(zeros)
     ]
+
+def how_many (board,player):
+    result = 0
+    for i in range(N):
+        for j in range(N):
+            if board[i][j] == player:
+                result += 1
+    return result
+            
