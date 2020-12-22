@@ -8,13 +8,16 @@ class Board:
         self.N = N
         self.board_color_1 = color_rgb(250, 220, 107)
         self.board_color_2 = color_rgb(219, 74, 14)
+        self.board_color_3 = color_rgb(200, 247, 200)
         self.circle_color_1 = color_rgb(222,241, 229)
         self.circle_color_2 = color_rgb(41, 26, 24)
+    
 
     def set_window(self):
         win = GraphWin('board',WIDTH,HEIGHT)
         win.setCoords(0, 0, self.N*SQR_SIZE, self.N*SQR_SIZE)
         self.window = win
+        self.last_window = win
 
     def rect(self, right, top, color):
         point_1 = Point(right, top)
@@ -53,8 +56,13 @@ class Board:
                 board_color = self.board_color_1
                 
             for j in range (self.N):
-                self.rect(j*SQR_SIZE, i*SQR_SIZE, board_color)
+                if (board[self.N-i-1][j] == 4):
+                    self.rect(j*SQR_SIZE, i*SQR_SIZE, self.board_color_3)
+                    board[self.N-i-1][j] = 0
+                else:
+                    self.rect(j*SQR_SIZE, i*SQR_SIZE, board_color)
 
+                
                 if (board[self.N-i-1][j] >= 1):
                     #player 1: white
                     self.circle( (j*SQR_SIZE)+(SQR_SIZE//2), (i*SQR_SIZE)+(SQR_SIZE//2), self.circle_color_1) 
@@ -73,5 +81,4 @@ class Board:
                 else:
                     board_color = self.board_color_1
         self.window.getMouse()
-        # self.window.close()
-    
+        

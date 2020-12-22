@@ -429,7 +429,7 @@ def where_can_i_move_next(board, player=1, verbose=False):
                         possible_moves.append( [(i,j), (i+1, j-1), 0, new_board]  )
 
                     #sequence of moves may occur
-                    elif (board[i+1][j-1] >= 1) and (i+2>=0 and j-2 >=0) and board[i+2][j-2] == 0:
+                    elif (board[i+1][j-1] >= 1) and (i+2<N and j-2 >=0) and board[i+2][j-2] == 0:
                         new_board = deepcopy(board)
                         new_board[i+1][j-1] = 0             #killed it
                         new_board[i][j] = 0                 #move me

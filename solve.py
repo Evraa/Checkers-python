@@ -18,8 +18,8 @@ def random_move(possible_moves, board):
             + None, cuz possible_moves is checked before it is sent.
     '''
     move = random.choice(possible_moves)
-    return move[3]
-    return
+    return move[3], move[0], None
+    
 
 def greedy_move(possible_moves, board):
     '''
@@ -34,8 +34,8 @@ def greedy_move(possible_moves, board):
     if max_win == 0:
         best_move = random.choice(possible_moves)
     
-    return best_move[3]
-    return
+    return best_move[3], best_move[0], None
+    
 
 def play_player(approach, player, board):
     '''
@@ -43,6 +43,8 @@ def play_player(approach, player, board):
         + board is updated by reference
     '''
     possible_moves = where_can_i_move_next(board=board, player=player)
+    if len(possible_moves) == 0:
+        return board, None, True
     if approach == 'random':
         return random_move(possible_moves, board)
     elif approach == 'greedy':
@@ -50,6 +52,7 @@ def play_player(approach, player, board):
 
     else:
         print (f'What is this! {approach}')
+
 
 
 def mian_game_loop (verbose=False):
@@ -62,23 +65,33 @@ def mian_game_loop (verbose=False):
     player = 1
     while game_end == 0:
         
-        board = play_player(approach='random', player=player, board=board)
-        
+        board,last,no_move = play_player(approach='greedy', player=player, board=board)
+        if no_move:
+            game_end = -2
+            break
         player = -1
         neg = how_many(board, player)
         if neg == 0:
             game_end = 1
             break
         if verbose:
+            board[last[0]][last[1]] = 4
             br.draw_board(board)
-        board = play_player(approach='random', player=player, board=board)
+
+            
+        board,last,no_move = play_player(approach='greedy', player=player, board=board)
+        if no_move:
+            game_end = 2
+            break
         player = 1
         pos = how_many(board, player)
         if pos == 0:
             game_end = -1
             break
         if verbose:
+            board[last[0]][last[1]] = 4
             br.draw_board(board)
-    print (f'Player: {game_end} WON')
+    input (f'Player: {game_end} WON')
 
-mian_game_loop(False)
+while True:
+    mian_game_loop()
