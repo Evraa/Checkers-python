@@ -68,8 +68,8 @@ def spec_esight():
     zeros = [0,0,0,0,0,0,0,0]
 
     return [ list(zeros),
-            [-1,0,1,0,-1,0,-1,0],
-            list(zeros),
+            [-1,0,1,0,1,0,-1,0],
+            [0,-1,0,0,0,0,0,0],
             list(zeros),
             list(zeros),
             list(zeros),
