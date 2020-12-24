@@ -2,6 +2,7 @@
 from collections import deque
 from numpy import random
 #Local imports
+from constants import MAX_POS, MAX_NEG
 
 
 class Node(object):
@@ -53,7 +54,9 @@ class Node(object):
             cost = [child.cost, child.board]
             costs.append(cost)
         return costs
-            
+    
+    def update_cost(self, cost):
+        self.cost = cost
 
 
 class Tree(object):
@@ -138,18 +141,26 @@ class Tree(object):
 
             while head.sibling != None or head.parent == None:
                 if head.player == -1:
-                    miny = min(head.get_children_cost(), key=lambda x: x[0])
-                    head.cost += miny[0]
+                    if len(head.children) == 0:
+                        head.cost = MAX_NEG
+                    else:
+                        miny = min(head.get_children_cost(), key=lambda x: x[0])
+                        head.cost += miny[0]
                     if i == 0:
                         return miny[1]
                 else:
-                    maxy = max(head.get_children_cost(), key=lambda x: x[0])
-                    head.cost += maxy[0]
+                    if len(head.children) == 0:
+                        head.cost = MAX_POS
+                    else:
+                        maxy = max(head.get_children_cost(), key=lambda x: x[0])
+                        head.cost += maxy[0]
                     if i == 0:
                         return maxy[1]
                 head = head.sibling
                 
                     
 
-    def update_board (self, player):
-        return  self.min_max()
+    def update_board (self):
+        if len(self.root.children) == 0:
+            return self.root.board, True
+        return  self.min_max(), False

@@ -8,13 +8,13 @@ from copy import deepcopy
 # from copy import deepcopy
 #Local imports
 from move_logic import where_can_i_move_next
-from common import init_board, how_many
-from constants import N, DEPTH
+from common import init_board, how_many, non_zeros_count
+from constants import N, DEPTH, MAX_NEG, MAX_POS
 from board import Board
 from tree import Node, Tree
 
 
-def construct_full_tree(board, pl):
+def construct_full_tree(board, pl, depth):
     '''
         + The main part starts here.
         + this function constructs nodes, node represents a state.
@@ -49,12 +49,16 @@ def construct_full_tree(board, pl):
             Q.append(switch)
             tree.inc_depth()
             new_gen = True
-            if tree.depth == DEPTH:
+            if tree.depth == depth:
                 break
             continue
         
         possible_moves = where_can_i_move_next(root.board, player)
-        
+
+        if len(possible_moves) == 0:
+            new_cost = MAX_POS if player == 1 else MAX_NEG
+            root.update_cost(new_cost)
+
         for pos in possible_moves:
             node = Node (pos[3], player, pos[2]*player)
             tree.append_node(node, root, new_gen)
@@ -63,9 +67,10 @@ def construct_full_tree(board, pl):
             player_swap = 1 if player == -1 else -1
             score = how_many (pos[3],player_swap)
             if score == 0:
-                return tree, node
+                new_cost = MAX_POS if player == 1 else MAX_NEG
+                node.update_cost(new_cost)
 
-    return tree, None
+    return tree, None, None
 
 
 def second_main():
@@ -74,14 +79,35 @@ def second_main():
     br.draw_board(board)
     player = 1
     while True:
-        tree, win_node = construct_full_tree(board, player)
-        if win_node is not None:
-            tree.print_tree()
-            print (f'Player: {win_node.get_player()} WON')
+        non_zeros = non_zeros_count(board)
+        if non_zeros <= 6:
+            depth = (int)(DEPTH*1.25)
+        elif non_zeros <= 4:
+            depth = (int)(DEPTH*1.75)
+        else:
+            depth = DEPTH
+
+        tree, win_node, status = construct_full_tree(board, player, depth)
+        # if win_node is not None:
+        #     tree.print_tree()
+        #     print (f'Player: {win_node.get_player()} WON')
+        #     print (f'Status: {status}')
+        #     break
+
+        # tree.print_tree()
+        board,lost = tree.update_board()
+        if lost:
+            player_swap = 1 if player == -1 else -1
+            print (f'Player: {player_swap} Won: No moves allowed for opponent.')
+            del tree
             break
-        tree.print_tree()
-        board = tree.update_board(player)
         br.draw_board(board)
+        player_swap = 1 if player == -1 else -1
+        score = how_many (board,player_swap)
+        if score == 0:
+            print (f'Player: {player} Won: All pieces are taken.')
+            del tree
+            break
         player = 1 if player == -1 else -1
         del tree
 

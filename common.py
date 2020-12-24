@@ -172,3 +172,11 @@ def main_game_loop (verbose=False):
             board[last[0]][last[1]] = 4
             br.draw_board(board)
     print (f'Player: {game_end} WON')
+
+def non_zeros_count(board):
+    non_zeros = 0
+    for i in range(N):
+        for j in range(N):
+            if board[i][j] != 0:
+                non_zeros+=1
+    return non_zeros
