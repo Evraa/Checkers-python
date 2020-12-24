@@ -35,7 +35,7 @@ def construct_full_tree(board, pl, depth):
     Q.append(switch)            #switch: new generation is comming. ie. new level, new depth.
     i = 0                       #for loggs
     new_gen = True              #for tree construction
-    
+    this_is_root = True
     while len(Q) > 1:
         #LOG
         if i % 1000 == 0:
@@ -54,21 +54,26 @@ def construct_full_tree(board, pl, depth):
             continue
         
         possible_moves = where_can_i_move_next(root.board, player)
-
+        
         if len(possible_moves) == 0:
             new_cost = MAX_POS if player == 1 else MAX_NEG
             root.update_cost(new_cost)
 
         for pos in possible_moves:
+                
             node = Node (pos[3], player, pos[2]*player)
             tree.append_node(node, root, new_gen)
             new_gen = False
-            Q.append(node)
             player_swap = 1 if player == -1 else -1
             score = how_many (pos[3],player_swap)
             if score == 0:
                 new_cost = MAX_POS if player == 1 else MAX_NEG
                 node.update_cost(new_cost)
+            if len(possible_moves) == 1 and this_is_root:
+                this_is_root = False
+                continue
+            else:
+                Q.append(node)
 
     return tree, None, None
 

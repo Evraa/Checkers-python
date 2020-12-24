@@ -163,4 +163,6 @@ class Tree(object):
     def update_board (self):
         if len(self.root.children) == 0:
             return self.root.board, True
+        elif len(self.root.children) == 1:
+            return self.root.children[0].board, False
         return  self.min_max(), False
