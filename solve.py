@@ -79,6 +79,7 @@ def construct_full_tree(board):
     Q.append(switch)
     flag = False
     i = 0
+    new_gen = True
     while len(Q) > 1:
         if i % 1000 == 0:
             print (tree.depth)
@@ -89,7 +90,8 @@ def construct_full_tree(board):
             player = 1 if player == -1 else -1
             Q.append(switch)
             tree.inc_depth()
-            if tree.depth == DEPTH:
+            new_gen = True
+            if tree.depth == DEPTH and False:
                 break
             continue
         
@@ -101,8 +103,14 @@ def construct_full_tree(board):
             #     input (f'Tree level with the first Cost occur: {tree.depth}')
             #     tree.print_tree(True)
             node = Node (pos[3], player, pos[2]*player)
-            tree.append_node(node, root)
+            tree.append_node(node, root, new_gen)
+            new_gen = False
             Q.append(node)
+            player_swap = 1 if player == -1 else -1
+            score = how_many (pos[3],player_swap)
+            if score == 0:
+                tree.print_tree()
+                input("We've got a winner")
 
         # if flag:
         #     break
@@ -112,14 +120,16 @@ def construct_full_tree(board):
 
 def second_main():
     board = init_board(N)
-    # br = Board(N)
-    # br.draw_board(board)
-    player = 1
-    while True:
-        tree = construct_full_tree(board)
-        # tree.print_tree()
-        tree.minmax(player = player)
-        player = 1 if player == -1 else -1
+    br = Board(N)
+    br.draw_board(board)
+    tree = construct_full_tree(board)
+    tree.print_tree()
+    # player = 1
+    # while True:
+    #     tree = construct_full_tree(board)
+    #     tree.print_tree()
+    #     # tree.minmax(player = player)
+    #     player = 1 if player == -1 else -1
 
 second_main()
 
