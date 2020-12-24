@@ -33,6 +33,9 @@ class Node(object):
         self.min_max_cost = None    #at min_max
         self.id = None              #at append
 
+    def get_player(self):
+        return self.player
+
     def print_node (self, cum = False):
         '''
             + Print the node ingredients.
@@ -120,4 +123,5 @@ class Tree(object):
             for child in node.children:
                 Q.append(child)
 
-    # def minmax (self, player):
+    def update_board (self, player):
+        pass
