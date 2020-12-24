@@ -81,7 +81,9 @@ def second_main():
             break
         tree.print_tree()
         board = tree.update_board(player)
+        br.draw_board(board)
         player = 1 if player == -1 else -1
+        del tree
 
 
 second_main()

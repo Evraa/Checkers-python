@@ -46,7 +46,15 @@ class Node(object):
             print (f'Level: {self.level} \tCost: {self.cum_cost} \tMy id is: {self.id} \tNo Direct Sibling, The Youngest! \tMy Dad id is {self.parent.id}')
         else:   
             print (f'Level: {self.level} \tCost: {self.cum_cost} \tMy id is: {self.id} \tMy Direct Sibling id is {self.sibling.id} \tMy Dad id is {self.parent.id}')
-        
+    
+    def get_children_cost(self):
+        costs = []
+        for child in self.children:
+            cost = [child.cost, child.board]
+            costs.append(cost)
+        return costs
+            
+
 
 class Tree(object):
     """
@@ -123,5 +131,25 @@ class Tree(object):
             for child in node.children:
                 Q.append(child)
 
+    def min_max(self):
+        
+        for i in reversed(range(len(self.level_ptrs)-1)):
+            head = self.level_ptrs[i]
+
+            while head.sibling != None or head.parent == None:
+                if head.player == -1:
+                    miny = min(head.get_children_cost(), key=lambda x: x[0])
+                    head.cost += miny[0]
+                    if i == 0:
+                        return miny[1]
+                else:
+                    maxy = max(head.get_children_cost(), key=lambda x: x[0])
+                    head.cost += maxy[0]
+                    if i == 0:
+                        return maxy[1]
+                head = head.sibling
+                
+                    
+
     def update_board (self, player):
-        pass
+        return  self.min_max()
