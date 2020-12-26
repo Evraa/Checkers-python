@@ -81,4 +81,4 @@ class Board:
                 else:
                     board_color = self.board_color_1
         self.window.getMouse()
-        self.window.close()
+        # self.window.close()

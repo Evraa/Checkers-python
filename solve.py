@@ -2,13 +2,11 @@
 import random
 from collections import deque
 from copy import deepcopy
-# from guppy import hpy
-# from memory_profiler import profile
-# h = hpy()
-# from copy import deepcopy
+import time
+
 #Local imports
 from move_logic import where_can_i_move_next
-from common import init_board, how_many, non_zeros_count
+from common import init_board, how_many, non_zeros_count, define_depth
 from constants import N, DEPTH, MAX_NEG, MAX_POS
 from board import Board
 from tree import Node, Tree
@@ -36,18 +34,30 @@ def construct_full_tree(board, pl, depth):
     i = 0                       #for loggs
     new_gen = True              #for tree construction
     this_is_root = True
+    start_time, end_time = None, None
     while len(Q) > 1:
         #LOG
-        if i % 1000 == 0:
-            print (tree.depth)
-        i += 1
+        # if i % 1000 == 0:
+        #     print (f'Tree depth till now: {tree.depth} \t\tGlobal depth: {depth}')
+        # i += 1
 
         root = Q.popleft()
         if root == "switch":
             #swap players
             player = 1 if player == -1 else -1
             Q.append(switch)
-            tree.inc_depth()
+            end_time = time.time()
+            if start_time == None:
+                tree.inc_depth()
+                print("First time, inc depth")
+            elif end_time - start_time < 5:
+                tree.inc_depth()
+                print (f'Tree depth till now: {tree.depth} \t\tTime: {end_time-start_time}')
+            else:
+                print (f"Time EXC depth: {tree.depth} \t\tTime: {end_time-start_time}\n")
+
+                return tree, None, None
+            start_time = time.time()
             new_gen = True
             if tree.depth == depth:
                 break
@@ -83,16 +93,26 @@ def second_main():
     br = Board(N)
     br.draw_board(board)
     player = 1
+    start_time, end_time = None, None
+    depth = DEPTH
+    player_1_time = 0
+    player_2_time = 0
+    
     while True:
-        non_zeros = non_zeros_count(board)
-        if non_zeros <= 6:
-            depth = (int)(DEPTH*1.25)
-        elif non_zeros <= 4:
-            depth = (int)(DEPTH*1.75)
-        else:
-            depth = DEPTH
+        
+        # if player == 1:
+        #     depth = define_depth(depth, player_1_time, player_2_time)
 
+        # start_time = time.time()
         tree, win_node, status = construct_full_tree(board, player, depth)
+        # end_time = time.time()
+        # if player == 1: 
+        #     player_1_time = end_time - start_time
+        #     print (f'Player 1 move time: {player_1_time}')
+        # if player == -1:
+        #     player_2_time = end_time - start_time
+        #     print (f'Player 2 move time: {player_2_time}')
+        
         # if win_node is not None:
         #     tree.print_tree()
         #     print (f'Player: {win_node.get_player()} WON')

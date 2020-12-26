@@ -1,7 +1,8 @@
 
 WIDTH, HEIGHT, SQR_SIZE = 720, 720, 30
 N = 7
-DEPTH = 6 if N%2==0 else 9
+DEPTH = 6 if N%2==0 else 100
+MIN_DEPTH = 6
 close_window = 0
 MAX_POS = pow(N,2)
 MAX_NEG = -MAX_POS

@@ -2,7 +2,7 @@
 from math import ceil, floor
 from numpy import random
 #Local imports and Global Variables
-from constants import N
+from constants import N, MIN_DEPTH
 from move_logic import where_can_i_move_next
 from board import Board
 
@@ -180,3 +180,22 @@ def non_zeros_count(board):
             if board[i][j] != 0:
                 non_zeros+=1
     return non_zeros
+
+def define_depth(orig_depth, pl_1_time, pl_2_time):
+    if pl_1_time == 0 and pl_2_time == 0:
+        return orig_depth
+
+    if pl_1_time + pl_1_time > 30:
+        if orig_depth == MIN_DEPTH:
+            print("Time exceeds limit, but Can Not decrease The depth")
+            return
+        else:
+            print("Time exceeds limit, Decrease The depth")
+            return orig_depth - 1
+    elif pl_1_time + pl_1_time > 0.05:
+        #less than 30 seconds
+        print ("Time is Good. Increase the depth")
+        return orig_depth+1
+    else:
+        print("This move is way too fast, it's not safe to increase the depth.")
+        return orig_depth
