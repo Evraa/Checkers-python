@@ -142,7 +142,7 @@ class Tree(object):
             while head.sibling != None or head.parent == None:
                 if head.player == -1:
                     if len(head.children) == 0:
-                        head.cost = MAX_NEG
+                        head.cost = MAX_NEG #this move guarantee win
                     else:
                         miny = min(head.get_children_cost(), key=lambda x: x[0])
                         head.cost += miny[0]
@@ -150,7 +150,7 @@ class Tree(object):
                         return miny[1]
                 else:
                     if len(head.children) == 0:
-                        head.cost = MAX_POS
+                        head.cost = MAX_POS #this move guarantee win
                     else:
                         maxy = max(head.get_children_cost(), key=lambda x: x[0])
                         head.cost += maxy[0]

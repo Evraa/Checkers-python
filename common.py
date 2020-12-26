@@ -1,9 +1,11 @@
 #Global imports
 from math import ceil, floor
 from numpy import random
+from copy import deepcopy
 #Local imports and Global Variables
 from constants import N, MIN_DEPTH
-from move_logic import where_can_i_move_next
+# from move_logic import where_can_i_move_next
+import move_logic
 from board import Board
 
 def init_board(N):
@@ -124,7 +126,7 @@ def play_player(approach, player, board):
         + Given a certain approach, decide on the next state of the game.
         + board is updated by reference
     '''
-    possible_moves = where_can_i_move_next(board=board, player=player)
+    possible_moves = move_logic.where_can_i_move_next(board=board, player=player)
     if len(possible_moves) == 0:
         return board, None, True
     if approach == 'random':
@@ -204,4 +206,4 @@ def evaluate(board):
     if board == None:
         print ("Error: none board is requested for evaluation!")
         return None
-    return sum(map(sum,board))   
+    return (int)(sum(map(sum,board)))

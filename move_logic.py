@@ -3,7 +3,7 @@ from copy import deepcopy
 #Local imports and Global Variables
 from constants import N
 from board import Board
-from common import evaluate
+from common import evaluate, non_zeros_count
 
 
 
@@ -43,7 +43,7 @@ def sequence_of_moves (board, start, end, player,results = [],seq=""):
                 board[end[0]+2][end[1]-2] = 1   #move me towards the new destination
                 seqq = seq + 'L'                #add this move to the sequene
                 #Check if there's more!
-                seqq+= sequence_of_moves(board, end, (end[0]+2 , end[1]-2), evaluate(board), results, seqq)
+                seqq+= sequence_of_moves(board, end, (end[0]+2 , end[1]-2), 1, results, seqq)
 
             #Can I move down-right? Is the intermidate cell an enemy? Is the terminal cell empty?
             if end[0]+2 < N and end[1]+2 < N and board[end[0]+1][end[1]+1] <= -1 and board[end[0]+2][end[1]+2]==0:
@@ -53,7 +53,7 @@ def sequence_of_moves (board, start, end, player,results = [],seq=""):
                 board[end[0]+2][end[1]+2] = 1   #move me towards the new destination
                 seqq = seq + 'R'                #add this move to the sequene
                 #Check if there's more!
-                seqq+= sequence_of_moves(board, end, (end[0]+2 , end[1]+2), evaluate(board),results,seqq)
+                seqq+= sequence_of_moves(board, end, (end[0]+2 , end[1]+2), 1,results,seqq)
             #not out of bound, but no more moves allowed!
             append_this(results, seq)
             return seq+ "0"
@@ -75,7 +75,7 @@ def sequence_of_moves (board, start, end, player,results = [],seq=""):
                 new_board[end[0]+2][end[1]-2] = 2   #move me towards the new destination
                 seqq = seq + 'L'                    #add this move to the sequene
                 #Check if there's more!
-                seqq += sequence_of_moves(new_board, end, (end[0]+2 , end[1]-2), evaluate(new_board),results,seqq)
+                seqq += sequence_of_moves(new_board, end, (end[0]+2 , end[1]-2), 2,results,seqq)
 
             #Can I move down-right? Is the intermidate cell an enemy? Is the terminal cell empty?
             if end[0]+2 < N and end[1]+2 < N and board[end[0]+1][end[1]+1] <= -1 and board[end[0]+2][end[1]+2]==0:
@@ -86,7 +86,7 @@ def sequence_of_moves (board, start, end, player,results = [],seq=""):
                 new_board[end[0]+2][end[1]+2] = 2   #move me towards the new destination
                 seqq = seq + 'R'                    #add this move to the sequene
                 #Check if there's more!
-                seqq += sequence_of_moves(new_board, end, (end[0]+2 , end[1]+2), evaluate(new_board),results,seqq)
+                seqq += sequence_of_moves(new_board, end, (end[0]+2 , end[1]+2), 2,results,seqq)
             
             #Can I move up-left? Is the intermidate cell an enemy? Is the terminal cell empty?
             if end[0]-2 >=0 and end[1]-2 >= 0 and board[end[0]-1][end[1]-1] <= -1 and board[end[0]-2][end[1]-2]==0:
@@ -97,7 +97,7 @@ def sequence_of_moves (board, start, end, player,results = [],seq=""):
                 new_board[end[0]-2][end[1]-2] = 2   #move me towards the new destination
                 seqq = seq + 'l'                    #add this move to the sequene
                 #Check if there's more!
-                seqq += sequence_of_moves(new_board, end, (end[0]-2 , end[1]-2), evaluate(new_board),results,seqq)
+                seqq += sequence_of_moves(new_board, end, (end[0]-2 , end[1]-2), 2,results,seqq)
                 
             #Can I move up-right? Is the intermidate cell an enemy? Is the terminal cell empty?
             if end[0]-2 >=0 and end[1]+2 < N and board[end[0]-1][end[1]+1] <= -1 and board[end[0]-2][end[1]+2]==0:
@@ -108,7 +108,7 @@ def sequence_of_moves (board, start, end, player,results = [],seq=""):
                 new_board[end[0]-2][end[1]+2] = 2   #move me towards the new destination
                 seqq = seq + 'r'                    #add this move to the sequene
                 #Check if there's more!
-                seqq += sequence_of_moves(new_board, end, (end[0]-2 , end[1]+2), evaluate(new_board),results,seqq)
+                seqq += sequence_of_moves(new_board, end, (end[0]-2 , end[1]+2), 2,results,seqq)
 
             #not out of bound, but no more moves allowed!
             append_this(results, seq)
@@ -128,7 +128,7 @@ def sequence_of_moves (board, start, end, player,results = [],seq=""):
                 board[end[0]-2][end[1]-2] = -1   #move me towards the new destination
                 seqq = seq + 'l'                #add this move to the sequene
                 #Check if there's more!
-                seqq+= sequence_of_moves(board, end, (end[0]-2 , end[1]-2), evaluate(board), results, seqq)
+                seqq+= sequence_of_moves(board, end, (end[0]-2 , end[1]-2), 1, results, seqq)
 
             #Can I move up-right? Is the intermidate cell an enemy? Is the terminal cell empty?
             if end[0]-2 >= 0 and end[1]+2 < N and board[end[0]-1][end[1]+1] >= 1 and board[end[0]-2][end[1]+2]==0:
@@ -138,7 +138,7 @@ def sequence_of_moves (board, start, end, player,results = [],seq=""):
                 board[end[0]-2][end[1]+2] = -1   #move me towards the new destination
                 seqq = seq + 'r'                #add this move to the sequene
                 #Check if there's more!
-                seqq+= sequence_of_moves(board, end, (end[0]-2 , end[1]+2), evaluate(board),results,seqq)
+                seqq+= sequence_of_moves(board, end, (end[0]-2 , end[1]+2), 1,results,seqq)
             #not out of bound, but no more moves allowed!
             append_this(results, seq)
             return seq+ "0"
@@ -160,7 +160,7 @@ def sequence_of_moves (board, start, end, player,results = [],seq=""):
                 new_board[end[0]+2][end[1]-2] = -2  #move me towards the new destination
                 seqq = seq + 'L'                    #add this move to the sequene
                 #Check if there's more!
-                seqq += sequence_of_moves(new_board, end, (end[0]+2 , end[1]-2), evaluate(new_board),results,seqq)
+                seqq += sequence_of_moves(new_board, end, (end[0]+2 , end[1]-2), 2,results,seqq)
 
             #Can I move down-right? Is the intermidate cell an enemy? Is the terminal cell empty?
             if end[0]+2 < N and end[1]+2 < N and board[end[0]+1][end[1]+1] >= 1 and board[end[0]+2][end[1]+2]==0:
@@ -171,7 +171,7 @@ def sequence_of_moves (board, start, end, player,results = [],seq=""):
                 new_board[end[0]+2][end[1]+2] = -2   #move me towards the new destination
                 seqq = seq + 'R'                    #add this move to the sequene
                 #Check if there's more!
-                seqq += sequence_of_moves(new_board, end, (end[0]+2 , end[1]+2), evaluate(new_board),results,seqq)
+                seqq += sequence_of_moves(new_board, end, (end[0]+2 , end[1]+2), 2,results,seqq)
             
             #Can I move up-left? Is the intermidate cell an enemy? Is the terminal cell empty?
             if end[0]-2 >=0 and end[1]-2 >= 0 and board[end[0]-1][end[1]-1] >= 1 and board[end[0]-2][end[1]-2]==0:
@@ -182,7 +182,7 @@ def sequence_of_moves (board, start, end, player,results = [],seq=""):
                 new_board[end[0]-2][end[1]-2] = -2   #move me towards the new destination
                 seqq = seq + 'l'                    #add this move to the sequene
                 #Check if there's more!
-                seqq += sequence_of_moves(new_board, end, (end[0]-2 , end[1]-2), evaluate(new_board),results,seqq)
+                seqq += sequence_of_moves(new_board, end, (end[0]-2 , end[1]-2), 2,results,seqq)
                 
             #Can I move up-right? Is the intermidate cell an enemy? Is the terminal cell empty?
             if end[0]-2 >=0 and end[1]+2 < N and board[end[0]-1][end[1]+1] >= 1 and board[end[0]-2][end[1]+2]==0:
@@ -193,7 +193,7 @@ def sequence_of_moves (board, start, end, player,results = [],seq=""):
                 new_board[end[0]-2][end[1]+2] = -2   #move me towards the new destination
                 seqq = seq + 'r'                    #add this move to the sequene
                 #Check if there's more!
-                seqq += sequence_of_moves(new_board, end, (end[0]-2 , end[1]+2), evaluate(new_board),results,seqq)
+                seqq += sequence_of_moves(new_board, end, (end[0]-2 , end[1]+2), 2,results,seqq)
 
             #not out of bound, but no more moves allowed!
             append_this(results, seq)
@@ -278,6 +278,7 @@ def where_can_i_move_next(board, player=1, verbose=False):
     '''
     #where the moves are stored at
     possible_moves = []
+    count_pieces = non_zeros_count(board)
     #loop throught the entire board for player 1/-1
     for i in range(N):
         for j in range (N):
@@ -466,7 +467,7 @@ def where_can_i_move_next(board, player=1, verbose=False):
     # Collect the possible forced moves allowed here
     possible_moves_forced = []
     for pos in possible_moves:
-        if pos[2] >= 1:
+        if non_zeros_count(pos[3]) < count_pieces: #then for sure, some gotta be eaten!
             possible_moves_forced.append(pos)
             forced = True
     # Swap if.
@@ -478,10 +479,10 @@ def where_can_i_move_next(board, player=1, verbose=False):
         i,j = pos[1][0],pos[1][1]
         if player == 1:
             if pos[3][i][j] == 1 and i == N-1:
-                 pos[3][i][j] = 2
+                pos[3][i][j] = 2
         elif player == -1:
             if pos[3][i][j] == -1 and i == 0:
-                 pos[3][i][j] = -2
+                pos[3][i][j] = -2
     # Show results in graphics mode.
     if verbose:
         for poss in possible_moves:

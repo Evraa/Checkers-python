@@ -6,7 +6,7 @@ import time
 
 #Local imports
 from move_logic import where_can_i_move_next
-from common import init_board, how_many, non_zeros_count, define_depth
+from common import init_board, how_many, non_zeros_count, define_depth,evaluate
 from constants import N, DEPTH, MAX_NEG, MAX_POS
 from board import Board
 from tree import Node, Tree
@@ -24,14 +24,14 @@ def construct_full_tree(board, pl, depth):
 
     #Crete the Root Node, add it to the tree and the Q
     player = deepcopy(pl)       #just to make sure, no shallow copy occurs
-    root = Node(board,player,0)
+    root = Node(board,player,evaluate(board))
     tree = Tree(root)
     tree.inc_depth()
     switch = "switch"
     Q = deque()                 #Q for adding nodes to be spanned later
     Q.append(root)              #append the root of course
     Q.append(switch)            #switch: new generation is comming. ie. new level, new depth.
-    i = 0                       #for loggs
+    # i = 0                       #for loggs
     new_gen = True              #for tree construction
     this_is_root = True
     start_time, end_time = None, None
@@ -50,7 +50,7 @@ def construct_full_tree(board, pl, depth):
             if start_time == None:
                 tree.inc_depth()
                 print("First time, inc depth")
-            elif end_time - start_time < 5:
+            elif end_time - start_time < 4:
                 tree.inc_depth()
                 print (f'Tree depth till now: {tree.depth} \t\tTime: {end_time-start_time}')
             else:
@@ -71,7 +71,7 @@ def construct_full_tree(board, pl, depth):
 
         for pos in possible_moves:
                 
-            node = Node (pos[3], player, pos[2]*player)
+            node = Node (pos[3], player, pos[2])
             tree.append_node(node, root, new_gen)
             new_gen = False
             player_swap = 1 if player == -1 else -1
@@ -80,10 +80,11 @@ def construct_full_tree(board, pl, depth):
                 new_cost = MAX_POS if player == 1 else MAX_NEG
                 node.update_cost(new_cost)
             if len(possible_moves) == 1 and this_is_root:
-                this_is_root = False
-                continue
+                Q.append(node)
+                return tree, None, None
             else:
                 Q.append(node)
+        this_is_root = False
 
     return tree, None, None
 

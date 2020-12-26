@@ -4,7 +4,7 @@ N = 7
 DEPTH = 6 if N%2==0 else 100
 MIN_DEPTH = 6
 close_window = 0
-MAX_POS = pow(N,2)
+MAX_POS = pow(N,3)
 MAX_NEG = -MAX_POS
 
 '''
