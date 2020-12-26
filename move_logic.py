@@ -3,6 +3,7 @@ from copy import deepcopy
 #Local imports and Global Variables
 from constants import N
 from board import Board
+from common import evaluate
 
 
 
@@ -42,7 +43,7 @@ def sequence_of_moves (board, start, end, player,results = [],seq=""):
                 board[end[0]+2][end[1]-2] = 1   #move me towards the new destination
                 seqq = seq + 'L'                #add this move to the sequene
                 #Check if there's more!
-                seqq+= sequence_of_moves(board, end, (end[0]+2 , end[1]-2), 1, results, seqq)
+                seqq+= sequence_of_moves(board, end, (end[0]+2 , end[1]-2), evaluate(board), results, seqq)
 
             #Can I move down-right? Is the intermidate cell an enemy? Is the terminal cell empty?
             if end[0]+2 < N and end[1]+2 < N and board[end[0]+1][end[1]+1] <= -1 and board[end[0]+2][end[1]+2]==0:
@@ -52,7 +53,7 @@ def sequence_of_moves (board, start, end, player,results = [],seq=""):
                 board[end[0]+2][end[1]+2] = 1   #move me towards the new destination
                 seqq = seq + 'R'                #add this move to the sequene
                 #Check if there's more!
-                seqq+= sequence_of_moves(board, end, (end[0]+2 , end[1]+2), 1,results,seqq)
+                seqq+= sequence_of_moves(board, end, (end[0]+2 , end[1]+2), evaluate(board),results,seqq)
             #not out of bound, but no more moves allowed!
             append_this(results, seq)
             return seq+ "0"
@@ -74,7 +75,7 @@ def sequence_of_moves (board, start, end, player,results = [],seq=""):
                 new_board[end[0]+2][end[1]-2] = 2   #move me towards the new destination
                 seqq = seq + 'L'                    #add this move to the sequene
                 #Check if there's more!
-                seqq += sequence_of_moves(new_board, end, (end[0]+2 , end[1]-2), 2,results,seqq)
+                seqq += sequence_of_moves(new_board, end, (end[0]+2 , end[1]-2), evaluate(new_board),results,seqq)
 
             #Can I move down-right? Is the intermidate cell an enemy? Is the terminal cell empty?
             if end[0]+2 < N and end[1]+2 < N and board[end[0]+1][end[1]+1] <= -1 and board[end[0]+2][end[1]+2]==0:
@@ -85,7 +86,7 @@ def sequence_of_moves (board, start, end, player,results = [],seq=""):
                 new_board[end[0]+2][end[1]+2] = 2   #move me towards the new destination
                 seqq = seq + 'R'                    #add this move to the sequene
                 #Check if there's more!
-                seqq += sequence_of_moves(new_board, end, (end[0]+2 , end[1]+2), 2,results,seqq)
+                seqq += sequence_of_moves(new_board, end, (end[0]+2 , end[1]+2), evaluate(new_board),results,seqq)
             
             #Can I move up-left? Is the intermidate cell an enemy? Is the terminal cell empty?
             if end[0]-2 >=0 and end[1]-2 >= 0 and board[end[0]-1][end[1]-1] <= -1 and board[end[0]-2][end[1]-2]==0:
@@ -96,7 +97,7 @@ def sequence_of_moves (board, start, end, player,results = [],seq=""):
                 new_board[end[0]-2][end[1]-2] = 2   #move me towards the new destination
                 seqq = seq + 'l'                    #add this move to the sequene
                 #Check if there's more!
-                seqq += sequence_of_moves(new_board, end, (end[0]-2 , end[1]-2), 2,results,seqq)
+                seqq += sequence_of_moves(new_board, end, (end[0]-2 , end[1]-2), evaluate(new_board),results,seqq)
                 
             #Can I move up-right? Is the intermidate cell an enemy? Is the terminal cell empty?
             if end[0]-2 >=0 and end[1]+2 < N and board[end[0]-1][end[1]+1] <= -1 and board[end[0]-2][end[1]+2]==0:
@@ -107,7 +108,7 @@ def sequence_of_moves (board, start, end, player,results = [],seq=""):
                 new_board[end[0]-2][end[1]+2] = 2   #move me towards the new destination
                 seqq = seq + 'r'                    #add this move to the sequene
                 #Check if there's more!
-                seqq += sequence_of_moves(new_board, end, (end[0]-2 , end[1]+2), 2,results,seqq)
+                seqq += sequence_of_moves(new_board, end, (end[0]-2 , end[1]+2), evaluate(new_board),results,seqq)
 
             #not out of bound, but no more moves allowed!
             append_this(results, seq)
@@ -127,7 +128,7 @@ def sequence_of_moves (board, start, end, player,results = [],seq=""):
                 board[end[0]-2][end[1]-2] = -1   #move me towards the new destination
                 seqq = seq + 'l'                #add this move to the sequene
                 #Check if there's more!
-                seqq+= sequence_of_moves(board, end, (end[0]-2 , end[1]-2), 1, results, seqq)
+                seqq+= sequence_of_moves(board, end, (end[0]-2 , end[1]-2), evaluate(board), results, seqq)
 
             #Can I move up-right? Is the intermidate cell an enemy? Is the terminal cell empty?
             if end[0]-2 >= 0 and end[1]+2 < N and board[end[0]-1][end[1]+1] >= 1 and board[end[0]-2][end[1]+2]==0:
@@ -137,7 +138,7 @@ def sequence_of_moves (board, start, end, player,results = [],seq=""):
                 board[end[0]-2][end[1]+2] = -1   #move me towards the new destination
                 seqq = seq + 'r'                #add this move to the sequene
                 #Check if there's more!
-                seqq+= sequence_of_moves(board, end, (end[0]-2 , end[1]+2), 1,results,seqq)
+                seqq+= sequence_of_moves(board, end, (end[0]-2 , end[1]+2), evaluate(board),results,seqq)
             #not out of bound, but no more moves allowed!
             append_this(results, seq)
             return seq+ "0"
@@ -159,7 +160,7 @@ def sequence_of_moves (board, start, end, player,results = [],seq=""):
                 new_board[end[0]+2][end[1]-2] = -2  #move me towards the new destination
                 seqq = seq + 'L'                    #add this move to the sequene
                 #Check if there's more!
-                seqq += sequence_of_moves(new_board, end, (end[0]+2 , end[1]-2), 2,results,seqq)
+                seqq += sequence_of_moves(new_board, end, (end[0]+2 , end[1]-2), evaluate(new_board),results,seqq)
 
             #Can I move down-right? Is the intermidate cell an enemy? Is the terminal cell empty?
             if end[0]+2 < N and end[1]+2 < N and board[end[0]+1][end[1]+1] >= 1 and board[end[0]+2][end[1]+2]==0:
@@ -170,7 +171,7 @@ def sequence_of_moves (board, start, end, player,results = [],seq=""):
                 new_board[end[0]+2][end[1]+2] = -2   #move me towards the new destination
                 seqq = seq + 'R'                    #add this move to the sequene
                 #Check if there's more!
-                seqq += sequence_of_moves(new_board, end, (end[0]+2 , end[1]+2), 2,results,seqq)
+                seqq += sequence_of_moves(new_board, end, (end[0]+2 , end[1]+2), evaluate(new_board),results,seqq)
             
             #Can I move up-left? Is the intermidate cell an enemy? Is the terminal cell empty?
             if end[0]-2 >=0 and end[1]-2 >= 0 and board[end[0]-1][end[1]-1] >= 1 and board[end[0]-2][end[1]-2]==0:
@@ -181,7 +182,7 @@ def sequence_of_moves (board, start, end, player,results = [],seq=""):
                 new_board[end[0]-2][end[1]-2] = -2   #move me towards the new destination
                 seqq = seq + 'l'                    #add this move to the sequene
                 #Check if there's more!
-                seqq += sequence_of_moves(new_board, end, (end[0]-2 , end[1]-2), 2,results,seqq)
+                seqq += sequence_of_moves(new_board, end, (end[0]-2 , end[1]-2), evaluate(new_board),results,seqq)
                 
             #Can I move up-right? Is the intermidate cell an enemy? Is the terminal cell empty?
             if end[0]-2 >=0 and end[1]+2 < N and board[end[0]-1][end[1]+1] >= 1 and board[end[0]-2][end[1]+2]==0:
@@ -192,7 +193,7 @@ def sequence_of_moves (board, start, end, player,results = [],seq=""):
                 new_board[end[0]-2][end[1]+2] = -2   #move me towards the new destination
                 seqq = seq + 'r'                    #add this move to the sequene
                 #Check if there's more!
-                seqq += sequence_of_moves(new_board, end, (end[0]-2 , end[1]+2), 2,results,seqq)
+                seqq += sequence_of_moves(new_board, end, (end[0]-2 , end[1]+2), evaluate(new_board),results,seqq)
 
             #not out of bound, but no more moves allowed!
             append_this(results, seq)
@@ -221,7 +222,7 @@ def add_results(results, possible_moves, start, orig_board):
     for result in results:
         possible_move = [start]
         board = deepcopy(orig_board)
-        cost = 0
+        # cost = 0
         i,j = start[0],start[1]
         for char in result:
             if char == '' or char == ' ':
@@ -230,33 +231,33 @@ def add_results(results, possible_moves, start, orig_board):
                 board[i+1][j+1] = 0 #kill it
                 board[i+2][j+2] = board[i][j]   #move me
                 board[i][j] =0      #from there
-                cost += 1
+                # cost += 1
                 i += 2
                 j += 2
             elif char == 'L':
                 board[i+1][j-1] = 0 #kill it
                 board[i+2][j-2] = board[i][j]   #move me
                 board[i][j] =0      #from there
-                cost += 1
+                # cost += 1
                 i += 2
                 j -= 2
             elif char == 'r':
                 board[i-1][j+1] = 0 #kill it
                 board[i-2][j+2] = board[i][j]   #move me
                 board[i][j] =0      #from there
-                cost += 1
+                # cost += 1
                 i -= 2
                 j += 2
             elif char == 'l':
                 board[i-1][j-1] = 0 #kill it
                 board[i-2][j-2] = board[i][j]   #move me
                 board[i][j] =0      #from there
-                cost += 1
+                # cost += 1
                 i -= 2
                 j -= 2
 
         possible_move.append((i,j))    
-        possible_move.append(cost)
+        possible_move.append(evaluate(board))
         possible_move.append(board)
         possible_moves.append(possible_move)
 
@@ -295,7 +296,7 @@ def where_can_i_move_next(board, player=1, verbose=False):
                         new_board[i+1][j-1] = 0             #killed it
                         new_board[i][j] = 0                 #move me
                         new_board[i+1][j-1] = board[i][j]   #there
-                        possible_moves.append( [(i,j), (i+1, j-1), 0, new_board]  )
+                        possible_moves.append( [(i,j), (i+1, j-1), evaluate(new_board), new_board]  )
 
                     #sequence of moves may occur
                     elif (board[i+1][j-1] <= -1) and (i+2<N and j-2 >=0) and board[i+2][j-2] == 0:
@@ -315,7 +316,7 @@ def where_can_i_move_next(board, player=1, verbose=False):
                         new_board[i+1][j+1] = 0             #killed it
                         new_board[i][j] = 0                 #move me
                         new_board[i+1][j+1] = board[i][j]   #there
-                        possible_moves.append( [(i,j), (i+1, j+1), 0, new_board]  )
+                        possible_moves.append( [(i,j), (i+1, j+1), evaluate(new_board), new_board]  )
 
                     elif (board[i+1][j+1] <= -1) and (i+2<N and j+2 <N) and board[i+2][j+2] == 0:
                         new_board = deepcopy(board)
@@ -338,7 +339,7 @@ def where_can_i_move_next(board, player=1, verbose=False):
                         new_board[i-1][j-1] = 0             #killed it
                         new_board[i][j] = 0                 #move me
                         new_board[i-1][j-1] = board[i][j]   #there
-                        possible_moves.append( [(i,j), (i-1, j-1), 0, new_board]  )
+                        possible_moves.append( [(i,j), (i-1, j-1), evaluate(new_board), new_board]  )
 
                     #sequence of moves may occur
                     elif (board[i-1][j-1] <= -1) and (i-2>=0 and j-2 >=0) and board[i-2][j-2] == 0:
@@ -358,7 +359,7 @@ def where_can_i_move_next(board, player=1, verbose=False):
                         new_board[i-1][j+1] = 0             #killed it
                         new_board[i][j] = 0                 #move me
                         new_board[i-1][j+1] = board[i][j]   #there
-                        possible_moves.append( [(i,j), (i-1, j+1), 0, new_board]  )
+                        possible_moves.append( [(i,j), (i-1, j+1), evaluate(new_board), new_board]  )
 
                     elif (board[i-1][j+1] <= -1) and (i-2>=0 and j+2<N) and board[i-2][j+2] == 0:
                         new_board = deepcopy(board)
@@ -383,7 +384,7 @@ def where_can_i_move_next(board, player=1, verbose=False):
                         new_board[i-1][j-1] = 0             #killed it
                         new_board[i][j] = 0                 #move me
                         new_board[i-1][j-1] = board[i][j]   #there
-                        possible_moves.append( [(i,j), (i-1, j-1), 0, new_board]  )
+                        possible_moves.append( [(i,j), (i-1, j-1), evaluate(new_board), new_board]  )
 
                     #sequence of moves may occur
                     elif (board[i-1][j-1] >= 1) and (i-2>=0 and j-2 >=0) and board[i-2][j-2] == 0:
@@ -403,7 +404,7 @@ def where_can_i_move_next(board, player=1, verbose=False):
                         new_board[i-1][j+1] = 0             #killed it
                         new_board[i][j] = 0                 #move me
                         new_board[i-1][j+1] = board[i][j]   #there
-                        possible_moves.append( [(i,j), (i-1, j+1), 0, new_board]  )
+                        possible_moves.append( [(i,j), (i-1, j+1), evaluate(new_board), new_board]  )
 
                     elif (board[i-1][j+1] >= 1) and (i-2>=0 and j+2 <N) and board[i-2][j+2] == 0:
                         new_board = deepcopy(board)
@@ -426,7 +427,7 @@ def where_can_i_move_next(board, player=1, verbose=False):
                         new_board[i+1][j-1] = 0             #killed it
                         new_board[i][j] = 0                 #move me
                         new_board[i+1][j-1] = board[i][j]   #there
-                        possible_moves.append( [(i,j), (i+1, j-1), 0, new_board]  )
+                        possible_moves.append( [(i,j), (i+1, j-1), evaluate(new_board), new_board]  )
 
                     #sequence of moves may occur
                     elif (board[i+1][j-1] >= 1) and (i+2<N and j-2 >=0) and board[i+2][j-2] == 0:
@@ -446,7 +447,7 @@ def where_can_i_move_next(board, player=1, verbose=False):
                         new_board[i+1][j+1] = 0             #killed it
                         new_board[i][j] = 0                 #move me
                         new_board[i+1][j+1] = board[i][j]   #there
-                        possible_moves.append( [(i,j), (i+1, j+1), 0, new_board]  )
+                        possible_moves.append( [(i,j), (i+1, j+1), evaluate(new_board), new_board]  )
 
                     elif (board[i+1][j+1] >= 1) and (i+2<N and j+2<N) and board[i+2][j+2] == 0:
                         new_board = deepcopy(board)
@@ -488,17 +489,3 @@ def where_can_i_move_next(board, player=1, verbose=False):
             br.draw_board(poss[3])
     
     return possible_moves
-
-# board = init_board(N)
-# zeros = [0,0,0,0,0,0,0,0]
-# test_board = [  [0,0,0,0,0,0,0,0],
-#                 [0,0,-1,0,-1,0,0,0],
-#                 [0,0,0,0,0,0,0,0],
-#                 [-1,0,-1,0,-1,0,-1,0],
-#                 [0,0,0,2,0,0,0,0],
-#                 [-1,0,-1,0,-1,0,-1,0],
-#                 [0,0,0,0,0,0,0,0],
-#                 [-1,0,-1,0,-1,0,-1,0]
-#             ]
-
-# print (where_can_i_move_next(test_board))

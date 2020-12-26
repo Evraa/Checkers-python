@@ -199,3 +199,9 @@ def define_depth(orig_depth, pl_1_time, pl_2_time):
     else:
         print("This move is way too fast, it's not safe to increase the depth.")
         return orig_depth
+
+def evaluate(board):
+    if board == None:
+        print ("Error: none board is requested for evaluation!")
+        return None
+    return sum(map(sum,board))   
