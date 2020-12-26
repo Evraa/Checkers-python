@@ -66,7 +66,7 @@ def construct_full_tree(board, pl):
             continue
         
         if root.pruned:
-            if VERBOSE: print ("Can't Go Down there, it's pruned")
+            if VERBOSE_DEEP: print ("Can't Go Down there, it's pruned")
             continue
 
         #Get the possible moves from this Node
@@ -163,6 +163,14 @@ def main():
     '''
     #init the board
     board = init_board(N)
+    zeros = [0,0,0,0]
+    board = [
+        [0,0,0,0],
+        [1,0,-1,0],
+        [0,1,0,1],
+        [-1,0,-1,0],
+        
+    ]
     #draw the board?
     if GFX:
         br = Board(N)
@@ -231,7 +239,11 @@ def main():
         
         if lost:
             player_swap = 1 if player == -1 else -1
-            print (f'Player: {player_swap} Won: No moves allowed for opponent.')
+            tree = construct_full_tree(board, player_swap)   #the main work is here. constructing the tree with pruning
+            if len(tree.root.children) >= 1:
+                print (f'Player: {player_swap} Won: No moves allowed for opponent.')
+            else:
+                print (f'Draw: No moves allowed for BOTH of them.')
             del tree
             break
 
@@ -247,3 +259,4 @@ def main():
         player = 1 if player == -1 else -1
         #free memory
         del tree
+main()

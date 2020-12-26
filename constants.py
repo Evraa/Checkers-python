@@ -1,6 +1,6 @@
 #board aspects
 WIDTH, HEIGHT, SQR_SIZE = 720, 720, 30
-N = 8
+N = 4
 #max depth for tree
 DEPTH = 1000
 MIN_DEPTH = 6
