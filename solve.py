@@ -227,14 +227,16 @@ def main():
                 pl_2_prev_prev_move = pl_2_prev_move
                 pl_2_prev_move = board
         
-        if VERBOSE and tree != None: tree.print_tree()
+        if VERBOSE_DEEP and tree != None: tree.print_tree()
         
         if lost:
             player_swap = 1 if player == -1 else -1
             print (f'Player: {player_swap} Won: No moves allowed for opponent.')
             del tree
             break
-        br.draw_board(board)
+
+        if GFX: br.draw_board(board)
+
         player_swap = 1 if player == -1 else -1
         score = how_many (board,player_swap)
         if score == 0:
