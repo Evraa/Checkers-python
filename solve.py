@@ -8,7 +8,7 @@ from numpy import random
 #Local imports
 from move_logic import where_can_i_move_next
 from common import init_board, how_many, non_zeros_count, define_depth,evaluate
-from constants import N, DEPTH, MAX_NEG, MAX_POS, GREEDY, AGAINST
+from constants import N, DEPTH, MAX_NEG, MAX_POS, GREEDY, AGAINST, TUNE
 from board import Board
 from tree import Node, Tree
 
@@ -51,7 +51,7 @@ def construct_full_tree(board, pl, depth):
             if start_time == None:
                 tree.inc_depth()
                 # print("First time, inc depth")
-            elif end_time - start_time < 0.1:
+            elif end_time - start_time < TUNE:
                 print (f'Tree depth till now: {tree.depth}\t\tTime: {end_time-start_time}')
                 tree.inc_depth()
                 tree.prune()

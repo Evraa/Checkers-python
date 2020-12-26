@@ -9,3 +9,4 @@ MAX_POS = pow(N,2)
 MAX_NEG = -MAX_POS
 GREEDY = True
 AGAINST = True
+TUNE = 5
