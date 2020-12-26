@@ -245,6 +245,3 @@ def main():
         player = 1 if player == -1 else -1
         #free memory
         del tree
-
-
-main()

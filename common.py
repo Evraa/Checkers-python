@@ -3,7 +3,7 @@ from math import ceil, floor
 from numpy import random
 from copy import deepcopy
 #Local imports and Global Variables
-from constants import N, MIN_DEPTH
+from constants import N
 # from move_logic import where_can_i_move_next
 import move_logic
 from board import Board
