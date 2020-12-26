@@ -85,8 +85,12 @@ def how_many (board,player):
     result = 0
     for i in range(N):
         for j in range(N):
-            if board[i][j] == player:
-                result += 1
+            if player == 1:
+                if board[i][j] >= player:
+                    result += 1
+            else:
+                if board[i][j] <= player:
+                    result += 1
     return result
             
 

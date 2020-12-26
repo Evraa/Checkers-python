@@ -49,14 +49,14 @@ def construct_full_tree(board, pl, depth):
             end_time = time.time()
             if start_time == None:
                 tree.inc_depth()
-                print("First time, inc depth")
-            elif end_time - start_time < 4:
+                # print("First time, inc depth")
+            elif end_time - start_time < 0.5:
                 tree.inc_depth()
-                print (f'Tree depth till now: {tree.depth} \t\tTime: {end_time-start_time}')
+                # print (f'Tree depth till now: {tree.depth} \t\tTime: {end_time-start_time}')
             else:
                 print (f"Time EXC depth: {tree.depth} \t\tTime: {end_time-start_time}\n")
 
-                return tree, None, None
+                return tree
             start_time = time.time()
             new_gen = True
             if tree.depth == depth:
@@ -81,56 +81,82 @@ def construct_full_tree(board, pl, depth):
                 node.update_cost(new_cost)
             if len(possible_moves) == 1 and this_is_root:
                 Q.append(node)
-                return tree, None, None
+                return tree
             else:
                 Q.append(node)
         this_is_root = False
 
-    return tree, None, None
+    return tree
 
+
+def go_greedy(board, player):
+    print("Repeated! GO GREEDY \n")
+    possible_moves = where_can_i_move_next(board, player)
+    max_win = 0
+    best_move = None
+    for pos in possible_moves:
+        if abs(pos[2]) > max_win:
+            best_move = pos
+    if max_win == 0:
+        best_move = random.choice(possible_moves)
+    
+    return best_move[3]
 
 def second_main():
     board = init_board(N)
     br = Board(N)
     br.draw_board(board)
     player = 1
-    start_time, end_time = None, None
     depth = DEPTH
-    player_1_time = 0
-    player_2_time = 0
+    pl_1_prev_move,pl_2_prev_move = None, None
+    pl_1_prev_prev_move, pl_2_prev_prev_move = None, None
     
     while True:
         
-        # if player == 1:
-        #     depth = define_depth(depth, player_1_time, player_2_time)
-
-        # start_time = time.time()
-        tree, win_node, status = construct_full_tree(board, player, depth)
-        # end_time = time.time()
-        # if player == 1: 
-        #     player_1_time = end_time - start_time
-        #     print (f'Player 1 move time: {player_1_time}')
-        # if player == -1:
-        #     player_2_time = end_time - start_time
-        #     print (f'Player 2 move time: {player_2_time}')
         
-        # if win_node is not None:
-        #     tree.print_tree()
-        #     print (f'Player: {win_node.get_player()} WON')
-        #     print (f'Status: {status}')
-        #     break
+        tree = construct_full_tree(board, player, depth)
+        
+        
+        board, lost = tree.update_board()
 
+        if player == 1:
+            if pl_1_prev_prev_move == None and pl_1_prev_move != None:
+                pl_1_prev_prev_move = pl_1_prev_move
+            if pl_1_prev_move == None:
+                pl_1_prev_move = board
+
+            if pl_1_prev_move != None and pl_1_prev_prev_move != None:
+                if board == pl_1_prev_prev_move:
+                    #GO GREEDY
+                    board = go_greedy(pl_1_prev_move, player)
+                pl_1_prev_prev_move = pl_1_prev_move
+                pl_1_prev_move = board
+
+        if player == -1:
+            if pl_2_prev_prev_move == None and pl_2_prev_move != None:
+                pl_2_prev_prev_move = pl_2_prev_move
+            if pl_2_prev_move == None:
+                pl_2_prev_move = board
+
+            if pl_2_prev_move != None and pl_2_prev_prev_move != None:
+                if board == pl_2_prev_prev_move:
+                    #GO GREEDY
+                    board = go_greedy(pl_2_prev_move, player)
+                pl_2_prev_prev_move = pl_2_prev_move
+                pl_2_prev_move = board
+        
         # tree.print_tree()
-        board,lost = tree.update_board()
+        
         if lost:
             player_swap = 1 if player == -1 else -1
             print (f'Player: {player_swap} Won: No moves allowed for opponent.')
             del tree
             break
-        br.draw_board(board)
+        # br.draw_board(board)
         player_swap = 1 if player == -1 else -1
         score = how_many (board,player_swap)
         if score == 0:
+            print (board)
             print (f'Player: {player} Won: All pieces are taken.')
             del tree
             break
