@@ -196,8 +196,8 @@ class Tree(object):
                 if player == 1:
                     #Update V
                     if head_least_level.v == None or\
-                        head_least_level.v < child.cum_cost: #look to maxi
-                        head_least_level.v = child.cum_cost
+                        head_least_level.v < child.cost: #look to maxi
+                        head_least_level.v = child.cost
                     #update alpha ~ Max
                     head_least_level.alpha = head_least_level.v
                     #should we prune?
@@ -210,8 +210,8 @@ class Tree(object):
                 if player == -1:
                     #Update V
                     if head_least_level.v == None or\
-                        head_least_level.v > child.cum_cost: #look to mini
-                        head_least_level.v = child.cum_cost
+                        head_least_level.v > child.cost: #look to mini
+                        head_least_level.v = child.cost
                     #update beta ~ Min
                     head_least_level.beta = head_least_level.v
                     #should we prune?
