@@ -8,7 +8,7 @@ from numpy import random
 #Local imports
 from move_logic import where_can_i_move_next
 from common import init_board, how_many, non_zeros_count, define_depth,evaluate
-from constants import N, DEPTH, MAX_NEG, MAX_POS
+from constants import N, DEPTH, MAX_NEG, MAX_POS, GREEDY
 from board import Board
 from tree import Node, Tree
 
@@ -28,7 +28,6 @@ def construct_full_tree(board, pl, depth):
     tree = Tree(root)
     tree.inc_depth()
     switch = "switch"
-    player = 1 if player == -1 else -1
     Q = deque()                 #Q for adding nodes to be spanned later
     Q.append(root)              #append the root of course
     Q.append(switch)            #switch: new generation is comming. ie. new level, new depth.
@@ -52,13 +51,13 @@ def construct_full_tree(board, pl, depth):
             if start_time == None:
                 tree.inc_depth()
                 # print("First time, inc depth")
-            elif end_time - start_time < 5:
+            elif end_time - start_time < 0.1:
+                print (f'Tree depth till now: {tree.depth}\t\tTime: {end_time-start_time}')
                 tree.inc_depth()
                 tree.prune()
                 # tree.print_tree()
-                print (f'Tree depth till now: {tree.depth} \t\tTime: {end_time-start_time}')
             else:
-                print (f"Time EXC depth: {tree.depth} \t\tTime: {end_time-start_time}\n")
+                print (f"Time EXC depth: {tree.depth}\t\tTime: {end_time-start_time}")
 
                 return tree
             start_time = time.time()
@@ -96,20 +95,34 @@ def construct_full_tree(board, pl, depth):
 
 
 def go_greedy(board, player):
-    print("Repeated! GO GREEDY \n")
-    possible_moves = where_can_i_move_next(board, player)
-    max_win = 0
-    best_move = None
-    for pos in possible_moves:
-        if abs(pos[2]) > max_win:
-            best_move = pos
-    if max_win == 0:
-        best_move = random.choice(possible_moves)
+    if GREEDY:
+        print("Player: {player} Repeated Move! GO GREEDY \n")
+        possible_moves = where_can_i_move_next(board, player)
+        
+        max_win = 0
+        best_move = None
+        for pos in possible_moves:
+            if abs(pos[2]) > max_win:
+                best_move = pos
+                max_win = abs(pos[2])
+        if max_win == 0:
+            ev = random.randint(0,len(possible_moves)-1) #for root
+            best_move = possible_moves[int(ev)]
     
     return best_move[3]
 
 def second_main():
-    board = init_board(N)
+    # board = init_board(N)
+    zeros = [0,0,0,0,0,0,0,0]
+    board = [  [0,-2,0,-2,0,0,0,0],
+                    list(zeros),
+                    list(zeros),
+                    list(zeros),
+                    list(zeros),
+                    list(zeros),
+                    list(zeros),
+                    [2,0,0,0,2,0,0,0]
+                ]
     br = Board(N)
     br.draw_board(board)
     player = 1
@@ -126,6 +139,7 @@ def second_main():
         board, lost = tree.update_board()
 
         if player == 1:
+            print(f'Player: {player}\t\t Cost: {tree.root.cost}\n')
             if pl_1_prev_prev_move == None and pl_1_prev_move != None:
                 pl_1_prev_prev_move = pl_1_prev_move
             if pl_1_prev_move == None:
@@ -135,10 +149,12 @@ def second_main():
                 if board == pl_1_prev_prev_move:
                     #GO GREEDY
                     board = go_greedy(pl_1_prev_move, player)
+                    
                 pl_1_prev_prev_move = pl_1_prev_move
                 pl_1_prev_move = board
 
         if player == -1:
+            print(f'Player: {player}\t\t Cost: {tree.root.cost}\n')
             if pl_2_prev_prev_move == None and pl_2_prev_move != None:
                 pl_2_prev_prev_move = pl_2_prev_move
             if pl_2_prev_move == None:
