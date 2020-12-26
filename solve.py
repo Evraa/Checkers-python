@@ -23,7 +23,7 @@ def construct_full_tree(board, pl):
         + Inputs: board and a player
         + Outputs: tree
     '''    
-
+    print ("THINKING...This might take awhile.")
     #Crete the Root Node, add it to the tree and the Q
     player = deepcopy(pl)       #just to make sure, no shallow copy occurs
     root = Node(board,player,evaluate(board))   #the root
@@ -227,7 +227,7 @@ def main():
                 pl_2_prev_prev_move = pl_2_prev_move
                 pl_2_prev_move = board
         
-        if VERBOSE: tree.print_tree()
+        if VERBOSE and tree != None: tree.print_tree()
         
         if lost:
             player_swap = 1 if player == -1 else -1
