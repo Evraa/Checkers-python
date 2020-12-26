@@ -3,6 +3,7 @@ import random
 from collections import deque
 from copy import deepcopy
 import time
+from numpy import random
 
 #Local imports
 from move_logic import where_can_i_move_next
@@ -10,7 +11,6 @@ from common import init_board, how_many, non_zeros_count, define_depth,evaluate
 from constants import N, DEPTH, MAX_NEG, MAX_POS
 from board import Board
 from tree import Node, Tree
-
 
 def construct_full_tree(board, pl, depth):
     '''
@@ -28,6 +28,7 @@ def construct_full_tree(board, pl, depth):
     tree = Tree(root)
     tree.inc_depth()
     switch = "switch"
+    player = 1 if player == -1 else -1
     Q = deque()                 #Q for adding nodes to be spanned later
     Q.append(root)              #append the root of course
     Q.append(switch)            #switch: new generation is comming. ie. new level, new depth.
@@ -47,11 +48,14 @@ def construct_full_tree(board, pl, depth):
             player = 1 if player == -1 else -1
             Q.append(switch)
             end_time = time.time()
+
             if start_time == None:
                 tree.inc_depth()
                 # print("First time, inc depth")
             elif end_time - start_time < 5:
                 tree.inc_depth()
+                tree.prune()
+                # tree.print_tree()
                 print (f'Tree depth till now: {tree.depth} \t\tTime: {end_time-start_time}')
             else:
                 print (f"Time EXC depth: {tree.depth} \t\tTime: {end_time-start_time}\n")
@@ -63,6 +67,9 @@ def construct_full_tree(board, pl, depth):
                 break
             continue
         
+        if root.pruned:
+            # print ("Can't Go Down there, it's pruned")
+            continue
         possible_moves = where_can_i_move_next(root.board, player)
         
         if len(possible_moves) == 0:
@@ -70,7 +77,6 @@ def construct_full_tree(board, pl, depth):
             root.update_cost(new_cost)
 
         for pos in possible_moves:
-                
             node = Node (pos[3], player, pos[2])
             tree.append_node(node, root, new_gen)
             new_gen = False

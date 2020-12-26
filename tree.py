@@ -1,6 +1,7 @@
 #Global imports
 from collections import deque
 from numpy import random
+from copy import deepcopy
 #Local imports
 from constants import MAX_POS, MAX_NEG
 
@@ -33,7 +34,10 @@ class Node(object):
         self.sibling = None         #at append
         self.min_max_cost = None    #at min_max
         self.id = None              #at append
-
+        self.v = None               #a-b algo
+        self.alpha = None           #a-b algo
+        self.beta = None            #a-b algo
+        self.pruned = False         #a-b algo
     def get_player(self):
         return self.player
 
@@ -42,11 +46,11 @@ class Node(object):
             + Print the node ingredients.
         '''
         if self.parent is None:
-            print (f'Level: {self.level} \tCost: {self.cum_cost} \tMy id is: {self.id} \tROOT')
+            print (f'Level: {self.level} \tCost: {self.cum_cost} \tMy id is: {self.id} \tROOT\t P: {self.pruned}')
         elif self.sibling is None:
-            print (f'Level: {self.level} \tCost: {self.cum_cost} \tMy id is: {self.id} \tNo Direct Sibling, The Youngest! \tMy Dad id is {self.parent.id}')
+            print (f'Level: {self.level} \tCost: {self.cum_cost} \tMy id is: {self.id} \tNo Direct Sibling, The Youngest! \tMy Dad id is {self.parent.id}\t P: {self.pruned}')
         else:   
-            print (f'Level: {self.level} \tCost: {self.cum_cost} \tMy id is: {self.id} \tMy Direct Sibling id is {self.sibling.id} \tMy Dad id is {self.parent.id}')
+            print (f'Level: {self.level} \tCost: {self.cum_cost} \tMy id is: {self.id} \tMy Direct Sibling id is {self.sibling.id} \tMy Dad id is {self.parent.id}\t P: {self.pruned}')
     
     def get_children_cost(self):
         costs = []
@@ -166,3 +170,100 @@ class Tree(object):
         elif len(self.root.children) == 1:
             return self.root.children[0].board, False
         return  self.min_max(), False
+
+    def reset_nodes (self):
+        for start_point in self.level_ptrs[:-1]:
+            while start_point != None:
+                start_point.v = None
+                start_point.alpha = None
+                start_point.beta = None
+                start_point = start_point.sibling
+
+    def prune(self):
+        self.reset_nodes()
+        head_least_level = self.level_ptrs[-2]
+        player = head_least_level.player
+        while head_least_level != None:
+            if head_least_level.pruned:
+                head_least_level = head_least_level.sibling
+                continue
+            prune_my_kids = False
+            for child in (head_least_level.children):
+                #prune the upcoming child?
+                if prune_my_kids:
+                    child.pruned = True
+                    continue
+                if player == 1:
+                    #Update V
+                    if head_least_level.v == None or\
+                        head_least_level.v < child.cum_cost: #look to maxi
+                        head_least_level.v = child.cum_cost
+                    #update alpha ~ Max
+                    head_least_level.alpha = head_least_level.v
+                    #should we prune?
+                    if head_least_level.beta != None and\
+                        head_least_level.alpha != None and\
+                        head_least_level.alpha > head_least_level.beta:
+                        #PRUNE
+                        prune_my_kids = True
+
+                if player == -1:
+                    #Update V
+                    if head_least_level.v == None or\
+                        head_least_level.v > child.cum_cost: #look to mini
+                        head_least_level.v = child.cum_cost
+                    #update beta ~ Min
+                    head_least_level.beta = head_least_level.v
+                    #should we prune?
+                    if head_least_level.beta != None and \
+                        head_least_level.alpha != None and\
+                        head_least_level.alpha > head_least_level.beta:
+                        #PRUNE
+                        prune_my_kids = True
+                
+            direct_child =head_least_level
+            next_sib = head_least_level.sibling
+
+            while True:
+                direct_dad = direct_child.parent
+                if direct_dad == None: #this is a root, terminate
+                    return
+
+                #update dad's v and beta
+                if (direct_dad.v == None and direct_dad.player == -1)\
+                    or (direct_dad.v != None and direct_child.v != None\
+                        and direct_dad.v > direct_child.v and direct_dad.player == -1): #he sure wants to mini
+                    direct_dad.v = direct_child.v
+                    direct_dad.beta = direct_dad.v
+                    
+                if (direct_dad.v == None and direct_dad.player == 1)\
+                    or (direct_dad.v != None and direct_child.v != None\
+                    and direct_dad.v < direct_child.v and direct_dad.player == 1):
+                    direct_dad.v = direct_child.v
+                    direct_dad.alpha = direct_dad.v
+                        
+                #update children's alpha/beta
+                if direct_dad.alpha != None or direct_dad.beta != None:
+                    for child in direct_dad.children:
+                        if direct_dad.alpha != None: child.alpha = direct_dad.alpha 
+                        if direct_dad.beta  != None: child.beta = direct_dad.beta 
+
+                #check if dad can prune!
+                if direct_dad.alpha != None and direct_dad.beta != None and direct_dad.alpha > direct_dad.beta\
+                    and direct_child != direct_dad.children[-1]:
+                    prune_now = False
+                    for child in direct_dad.children:
+                        if prune_now:
+                            child.pruned = True
+                            continue
+                        if child == direct_child:
+                            prune_now = True
+
+                #update direct dad!
+                if direct_child != direct_child.parent.children[-1]:
+                    break #don't inform its dad
+                else:
+                    direct_child = direct_dad #let's dig further
+
+
+            head_least_level = next_sib
