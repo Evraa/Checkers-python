@@ -8,7 +8,7 @@ from numpy import random
 #Local imports
 from move_logic import where_can_i_move_next
 from common import init_board, how_many, non_zeros_count, define_depth,evaluate
-from constants import N, DEPTH, MAX_NEG, MAX_POS, GREEDY
+from constants import N, DEPTH, MAX_NEG, MAX_POS, GREEDY, AGAINST
 from board import Board
 from tree import Node, Tree
 
@@ -111,18 +111,33 @@ def go_greedy(board, player):
     
     return best_move[3]
 
+def play_against(board, player):
+    #make him choose a move
+    possible_moves = where_can_i_move_next(board, player)
+    if len(possible_moves) == 0:
+        print ("Computer Won, no more move allowed")
+        return
+    print ("Pick a number of these Allowed Moves:\n")
+    for i,pos in enumerate(possible_moves):
+        print (f'{i}: Start: {pos[0]}\tEnd: {pos[1]}')
+    move_numb = int(input("Move picked: "))
+    while not isinstance(move_numb, int) or move_numb < 0 or move_numb >= len(possible_moves):
+        print ("Please choose a reasonable number!")
+        move_numb = int(input("Move picked: "))
+    return possible_moves[move_numb][3]
+
 def second_main():
-    # board = init_board(N)
-    zeros = [0,0,0,0,0,0,0,0]
-    board = [  [0,-2,0,-2,0,0,0,0],
-                    list(zeros),
-                    list(zeros),
-                    list(zeros),
-                    list(zeros),
-                    list(zeros),
-                    list(zeros),
-                    [2,0,0,0,2,0,0,0]
-                ]
+    board = init_board(N)
+    # zeros = [0,0,0,0,0,0,0,0]
+    # board = [  [0,-2,0,-2,0,0,0,0],
+    #                 list(zeros),
+    #                 list(zeros),
+    #                 list(zeros),
+    #                 list(zeros),
+    #                 list(zeros),
+    #                 list(zeros),
+    #                 [2,0,0,0,2,0,0,0]
+    #             ]
     br = Board(N)
     br.draw_board(board)
     player = 1
@@ -133,13 +148,16 @@ def second_main():
     total_count = non_zeros_count(board)
     
     while True:
+        tree=None
         if rounds == 50:
             print("\n\n100 Moves -50 each- and none got eaten. DRAW\n")
             return
-        tree = construct_full_tree(board, player, depth)
         
-        
-        board, lost = tree.update_board()
+        if player == -1 and AGAINST:
+            board = play_against(board,player)
+        else:
+            tree = construct_full_tree(board, player, depth)
+            board, lost = tree.update_board()
 
         if player == 1:
             check = non_zeros_count(board)
@@ -163,7 +181,7 @@ def second_main():
                 pl_1_prev_prev_move = pl_1_prev_move
                 pl_1_prev_move = board
 
-        if player == -1:
+        if player == -1 and not AGAINST:
             print(f'Player: {player}\t\t Cost: {tree.root.cost}\n')
             if pl_2_prev_prev_move == None and pl_2_prev_move != None:
                 pl_2_prev_prev_move = pl_2_prev_move
@@ -184,7 +202,7 @@ def second_main():
             print (f'Player: {player_swap} Won: No moves allowed for opponent.')
             del tree
             break
-        # br.draw_board(board)
+        br.draw_board(board)
         player_swap = 1 if player == -1 else -1
         score = how_many (board,player_swap)
         if score == 0:

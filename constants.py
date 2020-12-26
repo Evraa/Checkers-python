@@ -8,14 +8,4 @@ close_window = 0
 MAX_POS = pow(N,2)
 MAX_NEG = -MAX_POS
 GREEDY = True
-'''
-4 -> 5 and end
-6 -> 8 and dead
-8 -> 6 and dead
-10 -> 5 and dead
-
-5 -> 9 and end
-7 -> 10 and dead
-9 -> 8 and dead
-11 -> 8 and dead
-'''
+AGAINST = True
