@@ -38,6 +38,7 @@ class Node(object):
         self.alpha = None           #a-b algo
         self.beta = None            #a-b algo
         self.pruned = False         #a-b algo
+
     def get_player(self):
         return self.player
 
@@ -53,6 +54,9 @@ class Node(object):
             print (f'Level: {self.level} \tCost: {self.cum_cost} \tMy id is: {self.id} \tMy Direct Sibling id is {self.sibling.id} \tMy Dad id is {self.parent.id}\t P: {self.pruned}')
     
     def get_children_cost(self):
+        '''
+            + Get children's cost values in a list, to compare easily
+        '''
         costs = []
         for child in self.children:
             cost = [child.cost, child.board]
@@ -139,7 +143,14 @@ class Tree(object):
                 Q.append(child)
 
     def min_max(self):
-        
+        '''
+            + The min max algorithm.
+            + starting from nodes at the level previous to the last one. (depth - 1)
+            + and going upwards, update each node according to its player (max/min)
+            + go up, and repeat, until the roor is present, then return its next move.
+
+            +Output: Next best move
+        '''
         for i in reversed(range(len(self.level_ptrs)-1)):
             head = self.level_ptrs[i]
 
@@ -165,6 +176,9 @@ class Tree(object):
                     
 
     def update_board (self):
+        '''
+            + It calls the min_max algorithm, and just checks if root can easily pick without going deeper.
+        '''
         if len(self.root.children) == 0:
             return self.root.board, True
         elif len(self.root.children) == 1:
@@ -172,6 +186,10 @@ class Tree(object):
         return  self.min_max(), False
 
     def reset_nodes (self):
+        '''
+            + In order to re-prune the tree.
+            + One gotta delete previous values of v,alpha, and beta.
+        '''
         for start_point in self.level_ptrs[:-1]:
             while start_point != None:
                 start_point.v = None
@@ -180,6 +198,13 @@ class Tree(object):
                 start_point = start_point.sibling
 
     def prune(self):
+        '''
+            + a-b pruning algorithm
+            + starting from level (depth-1)
+            + update current value and direct parent
+            + and if that parent is the last child, then update its parent, and so on.
+            + and if root is reached, then terminate.
+        '''
         self.reset_nodes()
         head_least_level = self.level_ptrs[-2]
         player = head_least_level.player
