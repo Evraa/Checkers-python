@@ -50,9 +50,9 @@ def construct_full_tree(board, pl, depth):
             if start_time == None:
                 tree.inc_depth()
                 # print("First time, inc depth")
-            elif end_time - start_time < 0.5:
+            elif end_time - start_time < 5:
                 tree.inc_depth()
-                # print (f'Tree depth till now: {tree.depth} \t\tTime: {end_time-start_time}')
+                print (f'Tree depth till now: {tree.depth} \t\tTime: {end_time-start_time}')
             else:
                 print (f"Time EXC depth: {tree.depth} \t\tTime: {end_time-start_time}\n")
 
@@ -152,11 +152,10 @@ def second_main():
             print (f'Player: {player_swap} Won: No moves allowed for opponent.')
             del tree
             break
-        # br.draw_board(board)
+        br.draw_board(board)
         player_swap = 1 if player == -1 else -1
         score = how_many (board,player_swap)
         if score == 0:
-            print (board)
             print (f'Player: {player} Won: All pieces are taken.')
             del tree
             break
