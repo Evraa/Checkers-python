@@ -10,3 +10,7 @@ MAX_NEG = -MAX_POS
 GREEDY = True
 AGAINST = True
 TUNE = 5
+VERBOSE = False
+GFX = False
+PRUNE = True
+VERBOSE_DEEP = False

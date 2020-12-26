@@ -48,6 +48,7 @@ def init_board(N):
             board.append(list(zeros))
     return board
 
+
 def rand_init(N):
     '''
         + init random board of size NxN for testing purposess
