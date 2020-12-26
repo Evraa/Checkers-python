@@ -129,16 +129,26 @@ def second_main():
     depth = DEPTH
     pl_1_prev_move,pl_2_prev_move = None, None
     pl_1_prev_prev_move, pl_2_prev_prev_move = None, None
+    rounds = 0
+    total_count = non_zeros_count(board)
     
     while True:
-        
-        
+        if rounds == 50:
+            print("\n\n100 Moves -50 each- and none got eaten. DRAW\n")
+            return
         tree = construct_full_tree(board, player, depth)
         
         
         board, lost = tree.update_board()
 
         if player == 1:
+            check = non_zeros_count(board)
+            if check == total_count: #no one was eaten
+                rounds += 1
+            else:
+                rounds = 1
+                total_count = check
+
             print(f'Player: {player}\t\t Cost: {tree.root.cost}\n')
             if pl_1_prev_prev_move == None and pl_1_prev_move != None:
                 pl_1_prev_prev_move = pl_1_prev_move
@@ -174,7 +184,7 @@ def second_main():
             print (f'Player: {player_swap} Won: No moves allowed for opponent.')
             del tree
             break
-        br.draw_board(board)
+        # br.draw_board(board)
         player_swap = 1 if player == -1 else -1
         score = how_many (board,player_swap)
         if score == 0:
