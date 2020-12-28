@@ -163,14 +163,7 @@ def main():
     '''
     #init the board
     board = init_board(N)
-    zeros = [0,0,0,0]
-    board = [
-        [0,0,0,0],
-        [1,0,-1,0],
-        [0,1,0,1],
-        [-1,0,-1,0],
-        
-    ]
+
     #draw the board?
     if GFX:
         br = Board(N)
@@ -259,4 +252,3 @@ def main():
         player = 1 if player == -1 else -1
         #free memory
         del tree
-main()
